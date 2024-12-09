@@ -1,0 +1,45 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "ByteZoo.Blog Build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "./Sources/ByteZoo.Blog.sln",
+                "--configuration",
+                "Debug",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "ByteZoo.Blog Clean",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "./Sources/ByteZoo.Blog.sln",
+                "--configuration",
+                "Debug",
+                "-verbosity:quiet",
+                "--nologo"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
