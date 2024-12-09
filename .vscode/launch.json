@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ByteZoo.Blog.Console",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "ByteZoo.Blog Build",
+            "program": "${workspaceFolder}/Sources/ByteZoo.Blog.Console/bin/Debug/net9.0/ByteZoo.Blog.Console.dll",
+            "args": [
+                "GenerateGUID"
+            ],
+            "cwd": "${workspaceFolder}/Sources/ByteZoo.Blog.Console",
+            "console": "integratedTerminal",
+            "stopAtEntry": false
+        }
+    ]
+}
