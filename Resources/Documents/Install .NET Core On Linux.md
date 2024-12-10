@@ -100,4 +100,4 @@ source ~/.bashrc
 
 ## References
 
-The article scripts are located [here](https://github.com/meriffa/blog/tree/main/Resources/Scripts).
+The article script is located [here](https://github.com/meriffa/blog/tree/main/Resources/Scripts).
