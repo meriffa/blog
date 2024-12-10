@@ -4,7 +4,7 @@ RED='\033[0;31m';
 NC='\033[0m';
 SOLUTION_FOLDER=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../.." &> /dev/null && pwd )
 SOLUTION_NAME="$(basename $SOLUTION_FOLDER).zip"
-TARGET_FOLDER=~/Downloads
+TARGET_FOLDER=/media/sf_Downloads
 
 # Display error and stop
 DisplayErrorAndStop() {
