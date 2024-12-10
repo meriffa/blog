@@ -81,7 +81,7 @@ Microsoft.NETCore.App 9.0.0 [/usr/share/dotnet/shared/Microsoft.NETCore.App]
 Microsoft.AspNetCore.App 9.0.0 [/usr/share/dotnet/shared/Microsoft.AspNetCore.App]
 ```
 
-- If you installed .NET Core SDK Runtime you should see:
+- If you installed .NET Core SDK you should see:
 
 ```
 Microsoft.NETCore.App 9.0.0 [/usr/share/dotnet/shared/Microsoft.NETCore.App]
