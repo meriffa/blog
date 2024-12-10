@@ -8,11 +8,11 @@ Each deployment method contains three .NET Core installation options - .NET Core
 
 ## Package Manager (APT) Install
 
-- Install software prerequisites:
+* Install software prerequisites:
 
 ```sudo apt-get install -y -qq wget```
 
-- Update the list of trusted keys and package repository:
+* Update the list of trusted keys and package repository:
 
 ```
 wget -q https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
@@ -21,37 +21,37 @@ rm packages-microsoft-prod.deb
 sudo apt-get -qq update
 ```
 
-- Install .NET Core Runtime:
+* Install .NET Core Runtime:
 
 ```sudo apt-get install -y -qq dotnet-runtime-9.0```
 
-- Install ASP.NET Core Runtime:
+* Install ASP.NET Core Runtime:
 
 ```sudo apt-get install -y -qq aspnetcore-runtime-9.0```
 
-- Install .NET Core SDK:
+* Install .NET Core SDK:
 
 ```sudo apt-get install -y -qq dotnet-sdk-9.0```
 
 ## Scripted Install (dotnet-install.sh)
 
-- Install software prerequisites:
+* Install software prerequisites:
 
 ```sudo apt-get install curl libicu-dev -y -qq```
 
-- Install .NET Core Runtime:
+* Install .NET Core Runtime:
 
 ```curl -sSL https://dot.net/v1/dotnet-install.sh | sudo bash /dev/stdin --channel 9.0 --runtime dotnet --install-dir /opt/dotnet --no-path```
 
-- Install ASP.NET Core Runtime:
+* Install ASP.NET Core Runtime:
 
 ```curl -sSL https://dot.net/v1/dotnet-install.sh | sudo bash /dev/stdin --channel 9.0 --runtime aspnetcore --install-dir /opt/dotnet --no-path```
 
-- Install .NET Core SDK:
+* Install .NET Core SDK:
 
 ```curl -sSL https://dot.net/v1/dotnet-install.sh | sudo bash /dev/stdin --channel 9.0 --install-dir /opt/dotnet --no-path```
 
-- Complete .NET Core installation:
+* Complete .NET Core installation:
 
 ```
 sudo ln -s /opt/dotnet/dotnet /usr/bin/dotnet
@@ -61,27 +61,27 @@ source ~/.bashrc
 
 ## Verify Install (Optional)
 
-To verify the .NET Core install use the following:
+To verify the .NET Core installation use the following:
 
 ```
 dotnet --list-runtimes
 dotnet --list-sdks
 ```
 
-- If you installed .NET Core Runtime you should see:
+* If you installed .NET Core Runtime you should see:
 
 ```
 Microsoft.NETCore.App 9.0.0 [/usr/share/dotnet/shared/Microsoft.NETCore.App]
 ```
 
-- If you installed ASP.NET Core Runtime you should see:
+* If you installed ASP.NET Core Runtime you should see:
 
 ```
 Microsoft.NETCore.App 9.0.0 [/usr/share/dotnet/shared/Microsoft.NETCore.App]
 Microsoft.AspNetCore.App 9.0.0 [/usr/share/dotnet/shared/Microsoft.AspNetCore.App]
 ```
 
-- If you installed .NET Core SDK you should see:
+* If you installed .NET Core SDK you should see:
 
 ```
 Microsoft.NETCore.App 9.0.0 [/usr/share/dotnet/shared/Microsoft.NETCore.App]
@@ -101,3 +101,8 @@ source ~/.bashrc
 ## References
 
 The article script is located [here](https://github.com/meriffa/blog/blob/main/Resources/Scripts/Install%20.NET%20Core%20On%20Linux.sh).
+
+## Attributes
+
+* Category: .NET Debugging
+* Tags: .NET Core, Linux, Installation
