@@ -13,9 +13,7 @@
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
-            "group": {
-                "kind": "build"
-            },
+            "group": "build",
             "presentation": {
                 "reveal": "silent",
                 "clear": true
@@ -40,6 +38,22 @@
                 "clear": true
             },
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "ByteZoo.Blog.App Deploy",
+            "command": "./Resources/Scripts/Deploy.sh",
+            "type": "process",
+            "args": [
+                "ByteZoo.Blog.App",
+                "HOST_DEBUG"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "dependsOn": [
+                "ByteZoo.Blog Build"
+            ]
         }
     ]
 }
