@@ -100,9 +100,9 @@ source ~/.bashrc
 
 ## References
 
-The article script is located [here](https://github.com/meriffa/blog/blob/main/Resources/Scripts/Install%20.NET%20Core%20On%20Linux.sh).
+* [Article Script](https://github.com/meriffa/blog/blob/main/Resources/Scripts/Install%20.NET%20Core%20On%20Linux.sh)
 
 ## Attributes
 
-* Category: .NET Debugging
+* Category: Advanced .NET
 * Tags: .NET Core, Linux, Installation

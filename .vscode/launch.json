@@ -2,17 +2,39 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "ByteZoo.Blog.Console",
+            "name": "ByteZoo.Blog.App",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "ByteZoo.Blog Build",
-            "program": "${workspaceFolder}/Sources/ByteZoo.Blog.Console/bin/Debug/net9.0/ByteZoo.Blog.Console.dll",
+            "program": "${workspaceFolder}/Sources/ByteZoo.Blog.App/bin/Debug/net9.0/ByteZoo.Blog.App.dll",
             "args": [
-                "GenerateGUID"
+                "Pause"
             ],
-            "cwd": "${workspaceFolder}/Sources/ByteZoo.Blog.Console",
+            "cwd": "${workspaceFolder}/Sources/ByteZoo.Blog.App",
             "console": "integratedTerminal",
             "stopAtEntry": false
+        },
+        {
+            "name": "ByteZoo.Blog.App (Remote)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "ByteZoo.Blog.App Deploy",
+            "program": "/usr/bin/dotnet",
+            "args": [
+                "./ByteZoo.Blog.App.dll",
+                "Pause"
+            ],
+            "cwd": "~/ByteZoo.Blog.App",
+            "console": "integratedTerminal",
+            "stopAtEntry": false,
+            "pipeTransport": {
+                "pipeCwd": "${workspaceRoot}",
+                "pipeProgram": "ssh",
+                "pipeArgs": [
+                    "HOST_DEBUG"
+                ],
+                "debuggerPath": "~/.vsdbg/vsdbg"
+            }
         }
     ]
 }
