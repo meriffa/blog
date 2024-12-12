@@ -1,3 +1,4 @@
+using ByteZoo.Blog.Common.Exceptions;
 using ByteZoo.Blog.Common.Extensions;
 using ByteZoo.Blog.Common.Services;
 using CommandLine;
@@ -35,6 +36,8 @@ class Program
         }
         catch (Exception ex)
         {
+            if (ex is UnhandledException)
+                throw;
             displayService.WriteError(ex);
             return -1;
         }

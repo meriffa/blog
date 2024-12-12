@@ -24,7 +24,9 @@ public class PauseController : Controller
         {
             while (!Console.KeyAvailable)
                 Thread.Sleep(delay);
-            Console.ReadKey(true);
+            var key = Console.ReadKey(true);
+            if (key.KeyChar == 'e')
+                throw new("Pause exception.");
         }
     }
     #endregion
