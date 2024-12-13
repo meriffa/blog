@@ -1,12 +1,12 @@
-# Load .NET Core Dumps In `LLDB` On Linux
+# Load .NET Core Dumps In LLDB On Linux
 
-This article describes the steps to load a [core dump](https://en.wikipedia.org/wiki/Core_dump) from .NET Core application running on Linux in [LLDB](https://lldb.llvm.org/). `LLDB` and [SOS Debugging Extension](https://learn.microsoft.com/dotnet/core/diagnostics/sos-debugging-extension) cane be used for .NET Core application troubleshooting and analysis. The `SOS Debugging Extension` provides additional `LLDB` commands, which allows you to view information about managed code, managed heaps and runtime internal data types.
+This article describes the steps to load a [core dump](https://en.wikipedia.org/wiki/Core_dump) from .NET Core application running on Linux in [LLDB](https://lldb.llvm.org/). The debugger and the [SOS Debugging Extension](https://learn.microsoft.com/dotnet/core/diagnostics/sos-debugging-extension) can be used for .NET Core application troubleshooting and analysis. The extension provides additional debugger commands, which allows you to view information about managed code, managed heaps and runtime internal data types.
 
 ## Initial Configuration
 
-In order to load .NET Core dumps in `LLDB`, you have to configure your environment first.
+In order to load .NET Core dumps in LLDB, you have to configure your environment first.
 
-* Install `LLDB`:
+* Install LLDB:
 
 ```sudo apt-get install -y -qq lldb```
 
@@ -17,23 +17,23 @@ If you encounter `ModuleNotFoundError: No module named 'lldb.embedded_interprete
 > [!NOTE]
 > You may have to adjust the link source and target based on the output of the `lldb -P` command in your environment.
 
-* Install `SOS Debugging Extension`:
+* Install SOS Debugging Extension:
 
-Method 1 (Using [dotnet-debugger-extensions](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-debugger-extensions), Recommended):
+Method 1 (Using `dotnet-debugger-extensions`, Recommended):
 
 ```
 dotnet tool install --global dotnet-debugger-extensions
 ~/.dotnet/tools/dotnet-debugger-extensions install
 ```
 
-Method 2 (Using [dotnet-sos](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-sos)):
+Method 2 (Using `dotnet-sos`):
 
 ```
 dotnet tool install --global dotnet-sos
 ~/.dotnet/tools/dotnet-sos install
 ```
 
-* Install Symbol Downloader ([dotnet-symbol](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-symbol)):
+* Install Symbol Downloader (`dotnet-symbol`):
 
 ```dotnet tool install --global dotnet-symbol```
 
@@ -59,13 +59,13 @@ There are several types of symbol information available for download - symbol fi
 
 ```rm -rf ~/.dotnet/symbolcache```
 
-## Load Dump In `LLDB`
+## Load Dump In LLDB
 
-To load a .NET Core dump in `LLDB` use the following:
+To load a .NET Core dump in LLDB use the following:
 
 ```lldb --core <CoreDumpFile> dotnet```
 
-## Load Dump Symbols In `LLDB`
+## Load Dump Symbols In LLDB
 
 * Load Symbols From Folder:
 
@@ -81,9 +81,9 @@ setsymbolserver -ms
 loadsymbols
 ```
 
-* Change `LLDB` Symbol Settings:
+* Change LLDB Symbol Settings:
 
-To persists the symbol source settings between `LLDB` sessions edit `.lldbinit` using:
+To persists the symbol source settings between LLDB sessions edit `.lldbinit` using:
 
 ```nano ~/.lldbinit```
 
@@ -91,7 +91,7 @@ and update existing or add new `setsymbolserver` source.
 
 ## Load Dump From Another Machine
 
-You can load a core dump from another machine for analysis. In this case both machines (core dump source, core dump analysis) must have the same architecture and Linux distributions. If the distributions differ you need to get the following files from the source machine:
+You can load a core dump from another machine for analysis. In this case, both machines (core dump source, core dump analysis) must have the same architecture and Linux distributions. If the distributions differ you need to get the following files from the source machine:
 
 * dotnet (application host)
 * libcoreclr.so
@@ -100,11 +100,14 @@ You can load a core dump from another machine for analysis. In this case both ma
 The source files can be placed either in the same folder as the core dump file or in a different folder. When using a different folder use the `setclrpath <path>` command.
 
 > [!NOTE]
-> Cross platform architecture (e.g. ARM64 vs. AMD64) dump analysis is not supported.
+> Cross platform architecture (e.g. source: ARM64, analysis: AMD64) dump analysis is not supported.
 
 ## References
 
 * [Article Script](https://github.com/meriffa/blog/blob/main/Resources/Scripts/Load%20.NET%20Core%20Dumps%20In%20LLDB%20On%20Linux.sh)
+* [dotnet-debugger-extensions](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-debugger-extensions)
+* [dotnet-sos](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-sos)
+* [dotnet-symbol](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-symbol)
 
 ## Attributes
 
