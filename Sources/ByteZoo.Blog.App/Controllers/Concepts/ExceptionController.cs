@@ -1,12 +1,12 @@
 using ByteZoo.Blog.Common.Exceptions;
 using CommandLine;
 
-namespace ByteZoo.Blog.App.Controllers;
+namespace ByteZoo.Blog.App.Controllers.Concepts;
 
 /// <summary>
 /// Exception controller
 /// </summary>
-[Verb("Exception", HelpText = "Exception operation.")]
+[Verb("Concepts-Exception", HelpText = "Exception operation.")]
 public class ExceptionController : Controller
 {
 
