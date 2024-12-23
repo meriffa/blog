@@ -1,12 +1,12 @@
 using CommandLine;
 
-namespace ByteZoo.Blog.App.Controllers;
+namespace ByteZoo.Blog.App.Controllers.Concepts;
 
 /// <summary>
-/// Pause controller
+/// Type controller
 /// </summary>
-[Verb("Pause", HelpText = "Pause operation.")]
-public class PauseController : Controller
+[Verb("Concepts-Type", HelpText = "Type operation.")]
+public class TypeController : Controller
 {
 
     #region Protected Methods
@@ -24,9 +24,16 @@ public class PauseController : Controller
         {
             while (!Console.KeyAvailable)
                 Thread.Sleep(delay);
-            var key = Console.ReadKey(true);
-            if (key.KeyChar == 'e')
-                throw new("Pause exception.");
+            try
+            {
+                var key = Console.ReadKey(true);
+                if (key.KeyChar == 'e')
+                    throw new("Type exception.");
+            }
+            catch (Exception ex)
+            {
+                displayService.WriteError(ex);
+            }
         }
     }
     #endregion
