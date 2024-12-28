@@ -11,6 +11,7 @@ public class DisplayService(ILogger<DisplayService> logger)
 
     #region Constants
     private const string DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.ffff";
+    private static readonly TimeSpan KEY_CHECK_INTERVAL = TimeSpan.FromMilliseconds(200);
     #endregion
 
     #region Public Methods
@@ -72,6 +73,23 @@ public class DisplayService(ILogger<DisplayService> logger)
         WriteInformation(error);
         Console.ForegroundColor = color;
         logger.LogError("{Error}", error);
+    }
+
+    /// <summary>
+    /// Wait for key pressed
+    /// </summary>
+    public void Wait()
+    {
+        WriteInformation("Press any key to continue ...");
+        if (Console.IsInputRedirected)
+            while (Console.Read() == -1)
+                Thread.Sleep(KEY_CHECK_INTERVAL);
+        else
+        {
+            while (!Console.KeyAvailable)
+                Thread.Sleep(KEY_CHECK_INTERVAL);
+            Console.ReadKey(true);
+        }
     }
     #endregion
 

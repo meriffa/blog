@@ -88,7 +88,7 @@
 
 ## LLDB Commands
 
-* bpmd                                                    Creates a breakpoint at the specified managed method in the specified module.
+* bpmd                                                    Creates a breakpoint at the specified managed method in the specified module. E.g. `bpmd ByteZoo.Blog.App.dll ByteZoo.Blog.App.Controllers.Concepts.TypeController.Execute`. In case of set breakpoint error use `export DOTNET_EnableWriteXorExecute=0`.
 * breakpoint delete, br del                               Delete the specified breakpoint(s). If no breakpoints are specified, delete them all.
 * breakpoint list, br l                                   List some or all breakpoints at configurable levels of detail.
 * breakpoint set, br s                                    Sets a breakpoint or set of breakpoints in the executable.
@@ -96,8 +96,11 @@
 * disassemble, di                                         Disassemble specified instructions in the current target.
 * expression, expr                                        Evaluate an expression on the current thread. Displays any returned value with LLDB's default formatting.
 * memory read                                             Read from the memory of the current target process.
+* platform shell clear, shell clear                       Clear screen
 * process continue, continue                              Continue execution of all threads in the current process.
 * run                                                     Launch the executable in the debugger.
+* target create <filename>                                Create a target using the argument as the main executable. E.g. `target create /usr/bin/dotnet`.
+* process launch --stop-at-entry -- <run-args>            Launch the executable in the debugger. E.g. `process launch --stop-at-entry -- ./ByteZoo.Blog.App.dll Concepts-Type`.
 * target modules list, image list                         List current executable and dependent shared library images.
 * target modules lookup, image lookup                     Look up information within executable and dependent shared library images.
 * thread backtrace, bt                                    Show thread call stacks.

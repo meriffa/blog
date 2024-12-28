@@ -13,29 +13,7 @@ public class TypeController : Controller
     /// <summary>
     /// Execute controller
     /// </summary>
-    protected override void Execute()
-    {
-        var delay = TimeSpan.FromMilliseconds(200);
-        displayService.WriteInformation("Press any key to continue ...");
-        if (Console.IsInputRedirected)
-            while (Console.Read() == -1)
-                Thread.Sleep(delay);
-        else
-        {
-            while (!Console.KeyAvailable)
-                Thread.Sleep(delay);
-            try
-            {
-                var key = Console.ReadKey(true);
-                if (key.KeyChar == 'e')
-                    throw new("Type exception.");
-            }
-            catch (Exception ex)
-            {
-                displayService.WriteError(ex);
-            }
-        }
-    }
+    protected override void Execute() => displayService.Wait();
     #endregion
 
 }
