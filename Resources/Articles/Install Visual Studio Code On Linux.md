@@ -60,9 +60,6 @@ done
 
 ## References
 
-* [Article Script](https://github.com/meriffa/blog/blob/main/Resources/Scripts/Install%20Visual%20Studio%20Code%20On%20Linux.sh)
+* [Article Script](/Resources/Scripts/Install%20Visual%20Studio%20Code%20On%20Linux.sh)
 
-## Attributes
-
-* Category: Advanced .NET
-* Tags: Visual Studio Code, Linux, Installation
+<!--- Category = Advanced .NET, Tags = Visual Studio Code, Linux, Installation --->

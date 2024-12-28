@@ -92,7 +92,7 @@ Sample output for process id 718:
 
 ## Create Dump Using `dotnet-dump`
 
-The `dotnet-dump` tool is installed using the [.NET CLI](https://learn.microsoft.com/en-us/dotnet/core/tools/) `dotnet tool install` command. This command is part of the .NET Core SDK. For details on how to install the .NET Core SDK see [Install .NET Core On Linux](https://medium.com/@meriffa/install-net-core-on-linux-aedad163b065).
+The `dotnet-dump` tool is installed using the [.NET CLI](https://learn.microsoft.com/en-us/dotnet/core/tools/) `dotnet tool install` command. This command is part of the .NET Core SDK. For details on how to install the .NET Core SDK see [Install .NET Core On Linux](./Install%20.NET%20Core%20On%20Linux.md).
 
 To install the `dotnet-dump` tool use the following:
 
@@ -433,15 +433,12 @@ Output directory:                       /home/marian
 
 ## References
 
-* [Article Source Code](https://github.com/meriffa/blog/tree/main/Sources)
-* [Article Script](https://github.com/meriffa/blog/blob/main/Resources/Scripts/Create%20.NET%20Core%20Dumps%20On%20Linux.sh)
+* [Article Source Code](/Sources)
+* [Article Script](/Resources/Scripts/Create%20.NET%20Core%20Dumps%20On%20Linux.sh)
 * [.NET CLI Tools](https://learn.microsoft.com/dotnet/core/diagnostics/tools-overview#cli-tools)
 * [createdump](https://github.com/dotnet/coreclr/blob/master/Documentation/botr/xplat-minidump-generation.md)
 * [dotnet-dump](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-dump)
 * [Collect Dumps On Crash](https://learn.microsoft.com/dotnet/core/diagnostics/collect-dumps-crash)
 * [ProcDump](https://github.com/microsoft/ProcDump-for-Linux)
 
-## Attributes
-
-* Category: Advanced .NET
-* Tags: .NET Core, Core Dump, Memory Dump, Linux
+<!--- Category = Advanced .NET, Tags = .NET Core, Core Dump, Memory Dump, Linux --->

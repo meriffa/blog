@@ -104,12 +104,9 @@ The source files can be placed either in the same folder as the core dump file o
 
 ## References
 
-* [Article Script](https://github.com/meriffa/blog/blob/main/Resources/Scripts/Load%20.NET%20Core%20Dumps%20In%20LLDB%20On%20Linux.sh)
+* [Article Script](/Resources/Scripts/Load%20.NET%20Core%20Dumps%20In%20LLDB%20On%20Linux.sh)
 * [dotnet-debugger-extensions](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-debugger-extensions)
 * [dotnet-sos](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-sos)
 * [dotnet-symbol](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-symbol)
 
-## Attributes
-
-* Category: Advanced .NET
-* Tags: .NET Core, Core Dump, Memory Dump, Linux
+<!--- Category = Advanced .NET, Tags = .NET Core, Core Dump, Memory Dump, Linux --->
