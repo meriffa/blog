@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "ByteZoo.Blog Build",
+            "label": "ByteZoo.Blog Build (Debug)",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -21,7 +21,26 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "ByteZoo.Blog Clean",
+            "label": "ByteZoo.Blog Build (Release)",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "./Sources/ByteZoo.Blog.sln",
+                "--configuration",
+                "Release",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "ByteZoo.Blog Clean (Debug)",
             "command": "dotnet",
             "type": "process",
             "args": [
@@ -29,6 +48,25 @@
                 "./Sources/ByteZoo.Blog.sln",
                 "--configuration",
                 "Debug",
+                "-verbosity:quiet",
+                "--nologo"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "ByteZoo.Blog Clean (Release)",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "clean",
+                "./Sources/ByteZoo.Blog.sln",
+                "--configuration",
+                "Release",
                 "-verbosity:quiet",
                 "--nologo"
             ],

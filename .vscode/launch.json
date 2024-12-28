@@ -5,10 +5,16 @@
             "name": "ByteZoo.Blog.App",
             "type": "coreclr",
             "request": "launch",
-            "preLaunchTask": "ByteZoo.Blog Build",
+            "preLaunchTask": "ByteZoo.Blog Build (Debug)",
             "program": "${workspaceFolder}/Sources/ByteZoo.Blog.App/bin/Debug/net9.0/ByteZoo.Blog.App.dll",
             "args": [
-                "Pause"
+                "Concepts-Object",
+                "--firstName",
+                "John",
+                "--lastName",
+                "Smith",
+                "-d",
+                "1984-06-15"
             ],
             "cwd": "${workspaceFolder}/Sources/ByteZoo.Blog.App",
             "console": "integratedTerminal",
@@ -22,7 +28,7 @@
             "program": "/usr/bin/dotnet",
             "args": [
                 "./ByteZoo.Blog.App.dll",
-                "Pause"
+                "Concepts-Type"
             ],
             "cwd": "~/ByteZoo.Blog.App",
             "console": "integratedTerminal",
