@@ -16,3 +16,4 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [Summary](/Resources/Articles/.NET%20Core%20Concepts%20(Summary).md)
   * [Application](/Resources/Articles/.NET%20Core%20Concepts%20(Application).md)
   * [Types](/Resources/Articles/.NET%20Core%20Concepts%20(Types).md)
+  * [Objects](/Resources/Articles/.NET%20Core%20Concepts%20(Objects).md)
