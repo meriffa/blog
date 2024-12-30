@@ -78,16 +78,22 @@ public class DisplayService(ILogger<DisplayService> logger)
     /// <summary>
     /// Wait for key pressed
     /// </summary>
-    public void Wait()
+    public void Wait() => Wait(KEY_CHECK_INTERVAL);
+
+    /// <summary>
+    /// Wait for key pressed
+    /// </summary>
+    /// <param name="interval"></param>
+    public void Wait(TimeSpan interval)
     {
         WriteInformation("Press any key to continue ...");
         if (Console.IsInputRedirected)
             while (Console.Read() == -1)
-                Thread.Sleep(KEY_CHECK_INTERVAL);
+                Thread.Sleep(interval);
         else
         {
             while (!Console.KeyAvailable)
-                Thread.Sleep(KEY_CHECK_INTERVAL);
+                Thread.Sleep(interval);
             Console.ReadKey(true);
         }
     }

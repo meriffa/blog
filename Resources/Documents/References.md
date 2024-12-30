@@ -117,7 +117,8 @@
 
 ## LLDB Configuration
 
-* Setup Intel Disassembly Format                          `echo "settings set target.x86-disassembly-flavor intel" >> ~/.lldbinit`
+* Setup Intel disassembly format                          `echo "settings set target.x86-disassembly-flavor intel" >> ~/.lldbinit`
+* Clear command history                                   `rm ~/.lldb/lldb-widehistory`
 
 ## System.String
 

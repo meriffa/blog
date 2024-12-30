@@ -8,13 +8,9 @@
             "preLaunchTask": "ByteZoo.Blog Build (Debug)",
             "program": "${workspaceFolder}/Sources/ByteZoo.Blog.App/bin/Debug/net9.0/ByteZoo.Blog.App.dll",
             "args": [
-                "Concepts-Object",
-                "--firstName",
-                "John",
-                "--lastName",
-                "Smith",
-                "-d",
-                "1984-06-15"
+                "Concepts-Thread",
+                "--data",
+                "John Smith"
             ],
             "cwd": "${workspaceFolder}/Sources/ByteZoo.Blog.App",
             "console": "integratedTerminal",
