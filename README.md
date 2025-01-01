@@ -19,3 +19,4 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [Objects](/Resources/Articles/.NET%20Core%20Concepts%20(Objects).md)
   * [Threads](/Resources/Articles/.NET%20Core%20Concepts%20(Threads).md)
   * [Exceptions](/Resources/Articles/.NET%20Core%20Concepts%20(Exceptions).md)
+  * [Synchronization](/Resources/Articles/.NET%20Core%20Concepts%20(Synchronization).md)
