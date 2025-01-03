@@ -8,7 +8,7 @@
             "preLaunchTask": "ByteZoo.Blog Build (Debug)",
             "program": "${workspaceFolder}/Sources/ByteZoo.Blog.App/bin/Debug/net9.0/ByteZoo.Blog.App.dll",
             "args": [
-                "Concepts-Synchronization"
+                "Concepts-String"
             ],
             "cwd": "${workspaceFolder}/Sources/ByteZoo.Blog.App",
             "console": "integratedTerminal",
@@ -22,7 +22,7 @@
             "program": "/usr/bin/dotnet",
             "args": [
                 "./ByteZoo.Blog.App.dll",
-                "Concepts-Type"
+                "Concepts-String"
             ],
             "cwd": "~/ByteZoo.Blog.App",
             "console": "integratedTerminal",
