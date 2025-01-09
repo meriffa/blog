@@ -1,4 +1,4 @@
-using ByteZoo.Blog.Common.Models.Concurrency;
+using ByteZoo.Blog.Common.Models.Meals;
 using CommandLine;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -18,7 +18,7 @@ public class ConcurrencyController : Controller
     /// </summary>
     protected override void Execute() => Task.Run(async () =>
     {
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(20));
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
         await using (var breakfast = await PrepareBreakfastAsync(2, 3, 4, cancellationTokenSource.Token))
             displayService.WriteInformation($"[Breakfast] Drinks = {breakfast.Drinks?.Count}, Food = {breakfast.Food?.Count}.");
         displayService.Wait();

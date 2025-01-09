@@ -1,4 +1,4 @@
-namespace ByteZoo.Blog.Common.Models.Concurrency;
+namespace ByteZoo.Blog.Common.Models.Meals;
 
 /// <summary>
 /// Bacon

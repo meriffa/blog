@@ -1,4 +1,4 @@
-using ByteZoo.Blog.Common.Models;
+using ByteZoo.Blog.Common.Models.People;
 using CommandLine;
 
 namespace ByteZoo.Blog.App.Controllers.Concepts;

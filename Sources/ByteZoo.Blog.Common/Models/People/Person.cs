@@ -1,4 +1,4 @@
-namespace ByteZoo.Blog.Common.Models;
+namespace ByteZoo.Blog.Common.Models.People;
 
 /// <summary>
 /// Person

@@ -18,7 +18,6 @@ GetTargetProcessId() {
 CaptureDotNetCoreDump() {
   local RESULT=$(createdump -f $2 --full $1)
   echo "$RESULT" | grep "^\[createdump\] Dump successfully written in " &> /dev/null
-  [ $? != 0 ] && DisplayErrorAndStop "Capture .NET Core dump operation failed."
   echo $(echo "$RESULT" | grep -Po "^\[createdump\] Writing full dump to file \K.*$")
 }
 
@@ -48,8 +47,12 @@ if [ ! -z $FLAG_TARGET_NAME ]; then
   TARGET_PID=$(GetTargetProcessId $FLAG_TARGET_NAME)
   [[ -z $TARGET_PID ]] && DisplayErrorAndStop "Target .NET Core process name '$FLAG_TARGET_NAME' is not found.";
   OUTPUT_FILE=$(CaptureDotNetCoreDump $TARGET_PID $FLAG_OUTPUT_FILE)
-  echo ".NET Core dump created (PID = $TARGET_PID, File = '$OUTPUT_FILE')."
-  DownloadSymbols $OUTPUT_FILE $FLAG_SYMBOLS_FOLDER
+  if [ ! -z $OUTPUT_FILE ]; then
+    echo ".NET Core dump created (PID = $TARGET_PID, File = '$OUTPUT_FILE')."
+    DownloadSymbols $OUTPUT_FILE $FLAG_SYMBOLS_FOLDER
+  else
+    DisplayErrorAndStop "Capture .NET Core dump operation failed."
+  fi
 else
   DisplayErrorAndStop "Target process name (--name) is not specified."
 fi
