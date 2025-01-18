@@ -29,7 +29,7 @@ class Program
             DisplayService.WriteTitle("ByteZoo.Blog Application");
             displayService.WriteInformation($"ByteZoo.Blog application started.");
             Parser.Default
-                .ParseArguments(args, Assembly.GetExecutingAssembly().GetTypes().Where(i => i.GetCustomAttributes(typeof(VerbAttribute), true).Length > 0).ToArray())
+                .ParseArguments(args, [.. Assembly.GetExecutingAssembly().GetTypes().Where(i => i.GetCustomAttributes(typeof(VerbAttribute), true).Length > 0)])
                 .WithParsed<Controllers.Controller>(i => i.Execute(host.Services));
             displayService.WriteInformation($"ByteZoo.Blog application completed.");
             return 0;
