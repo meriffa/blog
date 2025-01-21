@@ -119,6 +119,7 @@
 
 * Setup Intel disassembly format                          `echo "settings set target.x86-disassembly-flavor intel" >> ~/.lldbinit`
 * Clear command history                                   `rm ~/.lldb/lldb-widehistory`
+* Run command and capture output                          `lldb -c <CoreDump> dotnet --batch -o "<command>" > <File.log>`
 
 ## System.String
 

@@ -7,8 +7,8 @@ namespace ByteZoo.Blog.App.Controllers.Concepts;
 /// <summary>
 /// LINQ controller
 /// </summary>
-[Verb("Concepts-Linq", HelpText = "LINQ operation.")]
-public class LinqController : Controller
+[Verb("Concepts-LINQ", HelpText = "LINQ operation.")]
+public class LINQController : Controller
 {
 
     #region Protected Methods

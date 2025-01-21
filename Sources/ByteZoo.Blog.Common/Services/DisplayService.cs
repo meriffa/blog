@@ -10,7 +10,7 @@ public class DisplayService(ILogger<DisplayService> logger)
 {
 
     #region Constants
-    private const string DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.ffff";
+    public const string DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.ffff";
     private static readonly TimeSpan KEY_CHECK_INTERVAL = TimeSpan.FromMilliseconds(200);
     #endregion
 

@@ -31,13 +31,14 @@ DownloadSymbols() {
 # Get parameters
 FLAG_OUTPUT_FILE="./CoreDump_Full.%p"
 FLAG_SYMBOLS_FOLDER=~/Symbols
-PARSED_ARGUMENTS=$(getopt -q --alternative --options n:,o:,s: --longoptions name:,output:,symbols: -- "$@")
+PARSED_ARGUMENTS=$(getopt -q --alternative --options n:,o:,s,f: --longoptions name:,output:,symbols,folder: -- "$@")
 eval set -- "$PARSED_ARGUMENTS"
 while : ; do
   case "$1" in
     -n | --name) FLAG_TARGET_NAME="$2"; shift 2 ;;
     -o | --output) FLAG_OUTPUT_FILE="$2"; shift 2 ;;
-    -s | --symbols) FLAG_SYMBOLS_FOLDER="$2"; shift 2 ;;
+    -s | --symbols) FLAG_SYMBOLS_DOWNLOAD="TRUE"; shift ;;
+    -f | --folder) FLAG_SYMBOLS_FOLDER="$2"; shift 2 ;;
     --) shift; break ;;
   esac
 done
@@ -49,10 +50,12 @@ if [ ! -z $FLAG_TARGET_NAME ]; then
   OUTPUT_FILE=$(CaptureDotNetCoreDump $TARGET_PID $FLAG_OUTPUT_FILE)
   if [ ! -z $OUTPUT_FILE ]; then
     echo ".NET Core dump created (PID = $TARGET_PID, File = '$OUTPUT_FILE')."
-    DownloadSymbols $OUTPUT_FILE $FLAG_SYMBOLS_FOLDER
+    if [ ! -z $FLAG_SYMBOLS_DOWNLOAD ]; then
+      DownloadSymbols $OUTPUT_FILE $FLAG_SYMBOLS_FOLDER
+    fi
   else
     DisplayErrorAndStop "Capture .NET Core dump operation failed."
   fi
 else
-  DisplayErrorAndStop "Target process name (--name) is not specified."
+  DisplayErrorAndStop "Target process name (-n|--name) is not specified."
 fi

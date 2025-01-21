@@ -33,6 +33,7 @@ public class CSharpController : Controller
         displayService.WriteInformation($"[Employee] Adjusted Salary = {baseSalaryAdjusted?.Value:c}, Date = {baseSalaryAdjusted?.Date:d}");
         ChangeEmployeePosition(employee);
         DisplayEmployeeSchema(typeof(Employee));
+        DisplayCalculator(111, 11);
         displayService.Wait();
     }
     #endregion
@@ -166,6 +167,22 @@ public class CSharpController : Controller
         var value = employee.BaseSalary * (1.00m + inflation);
         var result = new EmployeePayment { Value = value, Date = DateOnly.FromDateTime(DateTime.Now) };
         return result;
+    }
+
+    /// <summary>
+    /// Display calculator
+    /// </summary>
+    /// <param name="initialValue"></param>
+    /// <param name="modifiedValue"></param>
+    private void DisplayCalculator(int initialValue, int modifiedValue)
+    {
+        var calculator = new Calculator(initialValue);
+        CalculatorAccessor.GetValueField(calculator) = modifiedValue;
+        CalculatorAccessor.GetValueSquaredBackingField(calculator) = modifiedValue * modifiedValue;
+        var modified = CalculatorAccessor.GetValueField(calculator);
+        var doubled = CalculatorAccessor.GetValueMultiple(calculator, 2);
+        var squared = CalculatorAccessor.GetValueSquaredProperty(calculator);
+        displayService.WriteInformation($"[Calculator] Original = {initialValue}, Modified = {modified}, Doubled = {doubled}, Squared = {squared}");
     }
     #endregion
 
