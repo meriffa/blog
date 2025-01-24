@@ -414,12 +414,6 @@ public class IntrinsicsController : Controller
 
     #region Benchmarks
     /// <summary>
-    /// Region size
-    /// </summary>
-    [Params(1_000, 1_000_000)]
-    public int Size { get; set; }
-
-    /// <summary>
     /// Region 1
     /// </summary>
     private byte[]? region1;
@@ -428,6 +422,12 @@ public class IntrinsicsController : Controller
     /// Test region 2
     /// </summary>
     private byte[]? region2;
+
+    /// <summary>
+    /// Region size
+    /// </summary>
+    [Params(1_000, 1_000_000)]
+    public int Size { get; set; }
 
     /// <summary>
     /// Initialize benchmark data
