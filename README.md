@@ -24,3 +24,8 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [Iterators](/Resources/Articles/.NET%20Core%20Concepts%20(Iterators).md)
   * [Concurrency](/Resources/Articles/.NET%20Core%20Concepts%20(Concurrency).md)
   * [GC](/Resources/Articles/.NET%20Core%20Concepts%20(GC).md)
+  * [C# (TBD)](/Resources/Articles/.NET%20Core%20Concepts%20(C%23).md)
+  * [Expression Trees (TBD)](/Resources/Articles/.NET%20Core%20Concepts%20(Expression%20Trees).md)
+  * [LINQ (TBD)](/Resources/Articles/.NET%20Core%20Concepts%20(LINQ).md)
+  * [Entity Framework (TBD)](/Resources/Articles/.NET%20Core%20Concepts%20(EF).md)
+  * [Intrinsics (TBD)](/Resources/Articles/.NET%20Core%20Concepts%20(Intrinsics).md)

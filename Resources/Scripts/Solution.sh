@@ -18,6 +18,7 @@ dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Micr
 dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Microsoft.Extensions.Hosting
 dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Npgsql.EntityFrameworkCore.PostgreSQL
 dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Pomelo.EntityFrameworkCore.MySql --prerelease
+dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package BenchmarkDotNet
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package CommandLineParser
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package Microsoft.Extensions.Hosting
 
@@ -34,3 +35,6 @@ dotnet ef migrations add InitialVersion -p ./Sources/ByteZoo.Blog.Common -o ./En
 dotnet ef database update -p ./Sources/ByteZoo.Blog.Common -- MySQL "server=<Host>;user=<User>;password=<Password>;database=ByteZoo.Blog.Data;"
 dotnet ef migrations add InitialVersion -p ./Sources/ByteZoo.Blog.Common -o ./EntityFramework/Migrations -- SQLServer "Data Source=<Host>;User ID=<User>;Password=<Password>;Initial Catalog=ByteZoo.Blog.Data;Encrypt=false;"
 dotnet ef database update -p ./Sources/ByteZoo.Blog.Common -- SQLServer "Data Source=<Host>;User ID=<User>;Password=<Password>;Initial Catalog=ByteZoo.Blog.Data;Encrypt=false;"
+
+# Benchmarks
+cd ./Sources/ByteZoo.Blog.App && dotnet run -c Release -- Tools-Benchmark -a "\"--filter *IntrinsicsController*\""
