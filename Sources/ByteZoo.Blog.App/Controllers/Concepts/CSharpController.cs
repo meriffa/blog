@@ -34,6 +34,7 @@ public class CSharpController : Controller
         ChangeEmployeePosition(employee);
         DisplayEmployeeSchema(typeof(Employee));
         DisplayCalculator(111, 11);
+        DisplayVolatile();
         displayService.Wait();
     }
     #endregion
@@ -183,6 +184,42 @@ public class CSharpController : Controller
         var doubled = CalculatorAccessor.GetValueMultiple(calculator, 2);
         var squared = CalculatorAccessor.GetValueSquaredProperty(calculator);
         displayService.WriteInformation($"[Calculator] Original = {initialValue}, Modified = {modified}, Doubled = {doubled}, Squared = {squared}");
+    }
+
+    private volatile int x, y, x1, y1;
+
+    /// <summary>
+    /// Volatile keyword scenario
+    /// </summary>
+    private void DisplayVolatile()
+    {
+        while (!Console.KeyAvailable)
+        {
+            Task.WaitAll(Task.Factory.StartNew(DisplayVolatileTask1), Task.Factory.StartNew(DisplayVolatileTask2));
+            if (x1 == 0 && y1 == 0)
+                displayService.WriteInformation($"Out of Order Execution (OOE): A = {x1}, B = {y1}");
+            x = y = x1 = y1 = 0;
+        }
+    }
+
+    /// <summary>
+    /// Volatile keyword scenario task 1
+    /// </summary>
+    private void DisplayVolatileTask1()
+    {
+        x = 1;
+        Interlocked.MemoryBarrier(); // Prevents OOE. Use either MemoryBarrier() in all tasks or MemoryBarrierProcessWide() in one of them.
+        x1 = y;
+    }
+
+    /// <summary>
+    /// Volatile keyword scenario task 2
+    /// </summary>
+    private void DisplayVolatileTask2()
+    {
+        y = 2;
+        Interlocked.MemoryBarrier(); // Prevents OOE. Use either MemoryBarrier() in all tasks or MemoryBarrierProcessWide() in one of them.
+        y1 = x;
     }
     #endregion
 
