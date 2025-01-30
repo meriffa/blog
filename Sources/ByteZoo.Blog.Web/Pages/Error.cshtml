@@ -1,0 +1,23 @@
+@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Error";
+}
+<div>
+    <h5 class="text-danger">An error occurred while processing this request.</h5>
+    @if (Model.ShowRequestId)
+    {
+        <p>
+            <strong>Request ID:</strong>&nbsp;<code>@Model.RequestId</code>
+        </p>
+    }
+    <p>
+        <strong>Exception:</strong>&nbsp;<code>@Model.ExceptionMessage</code>
+    </p>
+    <p>
+        <strong>Path:</strong>&nbsp;<code>@Model.ExceptionPath</code>
+    </p>
+    <p>
+        Switch to <strong>Development</strong> environment to get detailed information about the error that occurred.
+    </p>
+</div>

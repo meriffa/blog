@@ -35,6 +35,37 @@
                 ],
                 "debuggerPath": "~/.vsdbg/vsdbg"
             }
+        },
+        {
+            "name": "ByteZoo.Blog.Web (Services)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "ByteZoo.Blog Build (Debug)",
+            "program": "${workspaceFolder}/Sources/ByteZoo.Blog.Web/bin/Debug/net9.0/ByteZoo.Blog.Web.dll",
+            "cwd": "${workspaceFolder}/Sources/ByteZoo.Blog.Web",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s/swagger"
+            },
+            "launchSettingsFilePath": "${workspaceFolder}/Sources/ByteZoo.Blog.Web/Properties/launchSettings.json",
+            "launchSettingsProfile": "ByteZoo.Blog.Web (Services)"
+        },
+        {
+            "name": "ByteZoo.Blog.Web (Portal)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "ByteZoo.Blog Build (Debug)",
+            "program": "${workspaceFolder}/Sources/ByteZoo.Blog.Web/bin/Debug/net9.0/ByteZoo.Blog.Web.dll",
+            "cwd": "${workspaceFolder}/Sources/ByteZoo.Blog.Web",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "launchSettingsFilePath": "${workspaceFolder}/Sources/ByteZoo.Blog.Web/Properties/launchSettings.json",
+            "launchSettingsProfile": "ByteZoo.Blog.Web (Portal)"
         }
     ]
 }
