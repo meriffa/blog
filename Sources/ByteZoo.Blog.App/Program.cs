@@ -34,10 +34,8 @@ class Program
             displayService.WriteInformation($"ByteZoo.Blog application completed.");
             return 0;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not UnhandledException && ex is not ThreadInterruptedException)
         {
-            if (ex is UnhandledException)
-                throw;
             displayService.WriteError(ex);
             return -1;
         }

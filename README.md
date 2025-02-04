@@ -31,3 +31,5 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [Intrinsics (TBD)](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(Intrinsics).md)
   * [Memory Allocation (TBD)](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(Memory%20Allocation).md)
   * [P/Invoke (TBD)](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(PInvoke).md)
+  * [ThreadLocal<T> (TBD)](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(ThreadLocal).md)
+  * [AsyncLocal<T> (TBD)](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(AsyncLocal).md)

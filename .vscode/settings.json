@@ -6,5 +6,4 @@
     "typescript.surveys.enabled": false,
     "editor.cursorBlinking": "solid",
     "dotnet.defaultSolution": "Sources/ByteZoo.Blog.sln",
-    "cSpell.diagnosticLevel": "Hint"
 }
