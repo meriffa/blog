@@ -7,17 +7,17 @@
     <h5 class="text-danger">An error occurred while processing this request.</h5>
     @if (Model.ShowRequestId)
     {
-        <p>
+        <div>
             <strong>Request ID:</strong>&nbsp;<code>@Model.RequestId</code>
-        </p>
+        </div>
     }
-    <p>
+    <div>
         <strong>Exception:</strong>&nbsp;<code>@Model.ExceptionMessage</code>
-    </p>
-    <p>
+    </div>
+    <div>
         <strong>Path:</strong>&nbsp;<code>@Model.ExceptionPath</code>
-    </p>
-    <p>
+    </div>
+    <div>
         Switch to <strong>Development</strong> environment to get detailed information about the error that occurred.
-    </p>
+    </div>
 </div>

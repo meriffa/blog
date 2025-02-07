@@ -42,6 +42,7 @@ public partial class CalculationController : Controller
         var i = 0;
         while (i < limit)
             i = (i + 1) % limit;
+        displayService.WriteInformation($"Calculation task completed (Thread ID = {Environment.CurrentManagedThreadId}).");
         return i;
     });
     #endregion

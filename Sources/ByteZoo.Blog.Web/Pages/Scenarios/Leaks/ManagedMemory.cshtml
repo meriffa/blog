@@ -1,0 +1,36 @@
+@page
+@{
+    ViewData["Title"] = "Managed Memory Leak";
+}
+@section Scripts
+{
+    <script>
+        $("#btnStart").click(function () {
+            ByteZoo.Blog.Web.Site.getRequest("#pContent", `/Api/Leaks/ManagedMemory?allocationBatch=${$("#txtAllocationBatch").val()}&textLength=${$("#txtTextLength").val()}&allocationDelay=${$("#txtAllocationDelay").val()}&duration=${$("#txtDuration").val()}`);
+        });
+    </script>
+}
+<div>
+    <h1 class="display-5">Managed Memory Leak</h1>
+    <div>
+        <label>Allocation Batch Size</label>
+        <input id="txtAllocationBatch" type="text" value="10" />
+    </div>
+    <div>
+        <label>Generated Text Length</label>
+        <input id="txtTextLength" type="text" value="10000" />
+    </div>
+    <div>
+        <label>Allocation Delay (ms)</label>
+        <input id="txtAllocationDelay" type="text" value="500" />
+    </div>
+    <div>
+        <label>Overall Duration (sec)</label>
+        <input id="txtDuration" type="text" value="3" />
+    </div>
+    <button id="btnStart" type="button" class="btn btn-primary">Start</button>
+    <div id="pContent" style="display: none;">
+        <div>Processing ...</div>
+        <img id="imgProcessing" src="~/Images/Processing.gif" />
+    </div>
+</div>

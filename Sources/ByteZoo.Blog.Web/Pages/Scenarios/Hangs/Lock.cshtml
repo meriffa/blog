@@ -1,0 +1,20 @@
+@page
+@{
+    ViewData["Title"] = "Application Hang (Deadlock, System.Threading.Lock)";
+}
+@section Scripts
+{
+    <script>
+        $("#btnStart").click(function () {
+            ByteZoo.Blog.Web.Site.getRequest("#pContent", "/Api/Hangs/Lock");
+        });
+    </script>
+}
+<div>
+    <h1 class="display-5">Application Hang (Deadlock, System.Threading.Lock)</h1>
+    <button id="btnStart" type="button" class="btn btn-primary">Start</button>
+    <div id="pContent" style="display: none;">
+        <div>Processing ...</div>
+        <img id="imgProcessing" src="~/Images/Processing.gif" />
+    </div>
+</div>

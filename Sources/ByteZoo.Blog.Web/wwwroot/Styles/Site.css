@@ -35,3 +35,11 @@ body {
 .form-floating>.form-control:focus::placeholder {
   text-align: start;
 }
+
+.dropdown-menu {
+  width: 300px;
+}
+
+img#imgProcessing {
+  width: 64px;
+}

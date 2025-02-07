@@ -8,7 +8,7 @@ namespace ByteZoo.Blog.Web.Controllers;
 /// Weather controller
 /// </summary>
 [ApiController, Route("/Api/[controller]/[action]")]
-public class WeatherController() : Controller
+public class WeatherController : Controller
 {
 
     #region Public Methods

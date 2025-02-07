@@ -24,6 +24,7 @@ public partial class CrashController : Controller
     /// </summary>
     protected override void Execute()
     {
+        displayService.WriteInformation("Application crash started.");
         if (ThrowException)
             throw new UnhandledException("Application crash.");
         Thread.CurrentThread.Interrupt();

@@ -1,15 +1,16 @@
 using ByteZoo.Blog.Common.Models.Business;
 using ByteZoo.Blog.Common.Models.People;
-using CommandLine;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
 
-namespace ByteZoo.Blog.App.Controllers.Scenarios.Leaks;
+namespace ByteZoo.Blog.Web.Controllers.Scenarios;
 
 /// <summary>
-/// Managed Memory Leak controller
+/// Resource Leaks controller
 /// </summary>
-[Verb("Scenarios-Leaks-ManagedMemory", HelpText = "Managed Memory Leak operation.")]
-public partial class ManagedMemoryController : Controller
+/// <param name="logger"></param>
+[ApiController, Route("/Api/[controller]/[action]")]
+public class LeaksController(ILogger<LeaksController> logger) : Controller
 {
 
     #region Constants
@@ -20,38 +21,24 @@ public partial class ManagedMemoryController : Controller
     private static readonly Workforce<Employee> workforce = new() { Employees = [] };
     #endregion
 
-    #region Properties
+    #region Public Methods
     /// <summary>
-    /// Allocation batch size
+    /// Managed Memory Leak
     /// </summary>
-    [Option('b', "allocationBatch", Default = 1, HelpText = "Allocation batch size.")]
-    public int AllocationBatch { get; set; }
-
-    /// <summary>
-    /// Generated text length
-    /// </summary>
-    [Option('t', "textLength", Default = 10, HelpText = "Generated text length.")]
-    public int TextLength { get; set; }
-
-    /// <summary>
-    /// Allocation delay
-    /// </summary>
-    [Option('d', "allocationDelay", Default = 1000, HelpText = "Allocation delay (ms).")]
-    public int AllocationDelay { get; set; }
-
-    #endregion
-
-    #region Protected Methods
-    /// <summary>
-    /// Execute controller
-    /// </summary>
-    protected override void Execute()
+    /// <param name="allocationBatch"></param>
+    /// <param name="textLength"></param>
+    /// <param name="allocationDelay"></param>
+    /// <param name="duration"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public ActionResult ManagedMemory(int allocationBatch, int textLength, int allocationDelay, int duration)
     {
         using var cancellationTokenSource = new CancellationTokenSource();
-        var task = StartMemoryConsumptionTask(AllocationBatch, TextLength, AllocationDelay, cancellationTokenSource.Token);
-        displayService.Wait();
+        var task = StartMemoryConsumptionTask(allocationBatch, textLength, allocationDelay, cancellationTokenSource.Token);
+        Thread.Sleep(TimeSpan.FromSeconds(duration));
         cancellationTokenSource.Cancel();
         Task.Run(async () => await task).Wait();
+        return Ok();
     }
     #endregion
 
@@ -70,10 +57,10 @@ public partial class ManagedMemoryController : Controller
         {
             for (int i = 0; i < allocationBatch; i++)
                 workforce.Employees.Add(GetEmployee(textLength));
-            displayService.WriteInformation($"Employee instances allocated (Count = {allocationBatch}, Total = {workforce.Employees.Count}).");
+            logger.LogInformation("Employee instances allocated (Count = {allocationBatch}, Total = {workforce.Employees.Count}).", allocationBatch, workforce.Employees.Count);
             if (cancellationToken.IsCancellationRequested)
                 break;
-            await Task.Delay(allocationDelay, cancellationToken);
+            await Task.Delay(allocationDelay);
         }
     }
 

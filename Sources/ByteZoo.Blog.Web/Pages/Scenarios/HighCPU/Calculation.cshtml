@@ -1,0 +1,24 @@
+@page
+@{
+    ViewData["Title"] = "High CPU Usage (Calculation)";
+}
+@section Scripts
+{
+    <script>
+        $("#btnStart").click(function () {
+            ByteZoo.Blog.Web.Site.getRequest("#pContent", `/Api/HighCPU/Calculation?taskCount=${$("#txtTaskCount").val()}`);
+        });
+    </script>
+}
+<div>
+    <h1 class="display-5">High CPU Usage (Calculation)</h1>
+    <div>
+        <label>Task Count</label>
+        <input id="txtTaskCount" type="text" value="1" />
+    </div>
+    <button id="btnStart" type="button" class="btn btn-primary">Start</button>
+    <div id="pContent" style="display: none;">
+        <div>Processing ...</div>
+        <img id="imgProcessing" src="~/Images/Processing.gif" />
+    </div>
+</div>
