@@ -37,3 +37,4 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
 * .NET Core Troubleshooting
 
   * [Hub](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(Hub).md)
+  * [Application Hang](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(Application%20Hang).md)

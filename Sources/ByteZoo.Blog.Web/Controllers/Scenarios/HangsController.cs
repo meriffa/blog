@@ -16,14 +16,14 @@ public class HangsController(ILogger<HangsController> logger) : Controller
     /// </summary>
     /// <returns></returns>
     [HttpGet]
-    public ActionResult Lock()
+    public ActionResult<bool> Lock()
     {
         var sharedResource1 = new Lock();
         var sharedResource2 = new Lock();
         var task1 = Task.Factory.StartNew(() => StartSharedResourceTask(sharedResource1, 1, sharedResource2, 2));
         var task2 = Task.Factory.StartNew(() => StartSharedResourceTask(sharedResource2, 2, sharedResource1, 1));
         Task.WaitAll(task1, task2);
-        return Ok();
+        return Ok(true);
     }
     #endregion
 
