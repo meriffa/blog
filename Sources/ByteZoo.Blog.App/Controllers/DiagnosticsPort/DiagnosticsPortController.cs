@@ -1,12 +1,12 @@
 using CommandLine;
 using Microsoft.Diagnostics.NETCore.Client;
 
-namespace ByteZoo.Blog.App.Controllers.DiagnosticPort;
+namespace ByteZoo.Blog.App.Controllers.DiagnosticsPort;
 
 /// <summary>
-/// DiagnosticPort controller
+/// DiagnosticsPort controller
 /// </summary>
-public abstract class DiagnosticPortController : Controller
+public abstract class DiagnosticsPortController : Controller
 {
 
     #region Properties

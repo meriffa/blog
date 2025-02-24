@@ -3,12 +3,12 @@ using Microsoft.Diagnostics.NETCore.Client;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace ByteZoo.Blog.App.Controllers.DiagnosticPort;
+namespace ByteZoo.Blog.App.Controllers.DiagnosticsPort;
 
 /// <summary>
 /// List processes controller
 /// </summary>
-[Verb("DiagnosticPort-ListProcesses", HelpText = "DiagnosticPort list processes operation.")]
+[Verb("DiagnosticsPort-ListProcesses", HelpText = "DiagnosticsPort list processes operation.")]
 public class ListProcessesController : Controller
 {
 

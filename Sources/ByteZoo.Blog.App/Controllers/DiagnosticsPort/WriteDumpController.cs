@@ -4,13 +4,13 @@ using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Parsers;
 using System.Diagnostics.Tracing;
 
-namespace ByteZoo.Blog.App.Controllers.DiagnosticPort;
+namespace ByteZoo.Blog.App.Controllers.DiagnosticsPort;
 
 /// <summary>
 /// Write dump controller
 /// </summary>
-[Verb("DiagnosticPort-WriteDump", HelpText = "DiagnosticPort write dump operation.")]
-public class WriteDumpController : DiagnosticPortController
+[Verb("DiagnosticsPort-WriteDump", HelpText = "DiagnosticsPort write dump operation.")]
+public class WriteDumpController : DiagnosticsPortController
 {
 
     #region Private Members

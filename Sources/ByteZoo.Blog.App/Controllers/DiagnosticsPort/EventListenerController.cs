@@ -4,13 +4,13 @@ using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Parsers;
 using System.Diagnostics.Tracing;
 
-namespace ByteZoo.Blog.App.Controllers.DiagnosticPort;
+namespace ByteZoo.Blog.App.Controllers.DiagnosticsPort;
 
 /// <summary>
 /// Event listener controller
 /// </summary>
-[Verb("DiagnosticPort-EventListener", HelpText = "DiagnosticPort event listener operation.")]
-public class EventListenerController : DiagnosticPortController
+[Verb("DiagnosticsPort-EventListener", HelpText = "DiagnosticsPort event listener operation.")]
+public class EventListenerController : DiagnosticsPortController
 {
 
     #region Properties

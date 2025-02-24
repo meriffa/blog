@@ -1,12 +1,12 @@
 using CommandLine;
 
-namespace ByteZoo.Blog.App.Controllers.DiagnosticPort;
+namespace ByteZoo.Blog.App.Controllers.DiagnosticsPort;
 
 /// <summary>
 /// Environment variables controller
 /// </summary>
-[Verb("DiagnosticPort-EnvironmentVariables", HelpText = "DiagnosticPort environment variables operation.")]
-public class EnvironmentVariablesController : DiagnosticPortController
+[Verb("DiagnosticsPort-EnvironmentVariables", HelpText = "DiagnosticsPort environment variables operation.")]
+public class EnvironmentVariablesController : DiagnosticsPortController
 {
 
     #region Protected Methods

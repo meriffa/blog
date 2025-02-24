@@ -23,6 +23,7 @@ dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Pome
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package BenchmarkDotNet
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package CommandLineParser
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package Microsoft.Diagnostics.NETCore.Client
+dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package Microsoft.Diagnostics.Runtime
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package Microsoft.Extensions.Hosting
 dotnet add ./Sources/ByteZoo.Blog.Web/ByteZoo.Blog.Web.csproj package Swashbuckle.AspNetCore
 
