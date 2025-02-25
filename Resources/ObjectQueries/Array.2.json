@@ -1,0 +1,30 @@
+{
+  "Description": "Extract 'string[]' Objects",
+  "Filter": "o => o.TypeName() == \u0022System.String[]\u0022 && o.FieldArrayLength() > 0",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    },
+    {
+      "Name": "string[].Length",
+      "Expression": "o => o.FieldArrayLength()"
+    },
+    {
+      "Name": "string[0]",
+      "Expression": "o => o.FieldArrayString(0)"
+    },
+    {
+      "Name": "string[^1]",
+      "Expression": "o => o.FieldArrayString(-1)"
+    },
+    {
+      "Name": "string[].Elements",
+      "Expression": "o => o.FieldArrayElementsString()"
+    }
+  ]
+}

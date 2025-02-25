@@ -1,0 +1,22 @@
+{
+  "Description": "Extract 'Exception' Objects",
+  "Filter": "o => o.Type?.IsException ?? false",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    },
+    {
+      "Name": "InheritsException",
+      "Expression": "o => o.Inherits(\u0022System.Exception\u0022)"
+    },
+    {
+      "Name": "ImplementsISerializable",
+      "Expression": "o => o.Implements(\u0022System.Runtime.Serialization.ISerializable\u0022)"
+    }
+  ]
+}

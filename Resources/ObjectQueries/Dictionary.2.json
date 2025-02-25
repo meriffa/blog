@@ -1,0 +1,22 @@
+{
+  "Description": "Extract 'Dictionary<int, string>' Objects",
+  "Filter": "o => o.TypeName() == \u0022System.Collections.Generic.Dictionary<System.Int32, System.String>\u0022 && o.FieldDictionaryCount() > 0",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    },
+    {
+      "Name": "Dictionary.Count",
+      "Expression": "o => o.FieldDictionaryCount()"
+    },
+    {
+      "Name": "Dictionary.Entries",
+      "Expression": "o => o.FieldDictionaryEntriesString<int>()"
+    }
+  ]
+}

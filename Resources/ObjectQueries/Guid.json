@@ -1,0 +1,18 @@
+{
+  "Description": "Extract 'Guid' Objects",
+  "Filter": "o => o.TypeName() == \u0022System.Guid\u0022",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    },
+    {
+      "Name": "Value",
+      "Expression": "o => o.Guid()"
+    }
+  ]
+}

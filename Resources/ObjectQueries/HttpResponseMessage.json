@@ -1,0 +1,30 @@
+{
+  "Description": "Extract 'HttpResponseMessage' Objects",
+  "Filter": "o => o.TypeName() == \u0022System.Net.Http.HttpResponseMessage\u0022",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    },
+    {
+      "Name": "Method",
+      "Expression": "o => o.FieldObject(\u0022_requestMessage\u0022).FieldHttpMethod(\u0022_method\u0022)"
+    },
+    {
+      "Name": "RequestUri",
+      "Expression": "o => o.FieldObject(\u0022_requestMessage\u0022).FieldUri(\u0022_requestUri\u0022)"
+    },
+    {
+      "Name": "ResponseStatus",
+      "Expression": "o => o.Field<int>(\u0022_statusCode\u0022)"
+    },
+    {
+      "Name": "Disposed",
+      "Expression": "o => o.Field<bool>(\u0022_disposed\u0022)"
+    }
+  ]
+}

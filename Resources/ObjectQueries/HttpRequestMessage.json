@@ -1,0 +1,26 @@
+{
+  "Description": "Extract 'HttpRequestMessage' Objects",
+  "Filter": "o => o.TypeName() == \u0022System.Net.Http.HttpRequestMessage\u0022",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    },
+    {
+      "Name": "Method",
+      "Expression": "o => o.FieldHttpMethod(\u0022_method\u0022)"
+    },
+    {
+      "Name": "RequestUri",
+      "Expression": "o => o.FieldUri(\u0022_requestUri\u0022)"
+    },
+    {
+      "Name": "SendStatus",
+      "Expression": "o => o.Field<int>(\u0022_sendStatus\u0022)"
+    }
+  ]
+}

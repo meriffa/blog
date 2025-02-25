@@ -1,0 +1,46 @@
+{
+  "Description": "Extract 'Employee[]' Objects",
+  "Filter": "o => o.TypeName() == \u0022ByteZoo.Blog.Common.Models.Business.Employee[]\u0022",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    },
+    {
+      "Name": "Employee[].Length",
+      "Expression": "o => o.FieldArrayLength()"
+    },
+    {
+      "Name": "Employee[0].Id",
+      "Expression": "o => o.FieldArrayObject(0).Property<int>(\u0022Id\u0022)"
+    },
+    {
+      "Name": "Employee[0].Name.First",
+      "Expression": "o => o.FieldArrayObject(0).PropertyObject(\u0022Name\u0022).PropertyString(\u0022First\u0022)"
+    },
+    {
+      "Name": "Employee[0].Name.Last",
+      "Expression": "o => o.FieldArrayObject(0).PropertyObject(\u0022Name\u0022).PropertyString(\u0022Last\u0022)"
+    },
+    {
+      "Name": "Employee[0].DateOfBirth",
+      "Expression": "o => o.FieldArrayObject(0).Property<System.DateTime>(\u0022DateOfBirth\u0022)"
+    },
+    {
+      "Name": "Employee[0].EyeColor",
+      "Expression": "o => o.FieldArrayObject(0).Property<int>(\u0022EyeColor\u0022)"
+    },
+    {
+      "Name": "Employee[0].Position",
+      "Expression": "o => o.FieldArrayObject(0).PropertyString(\u0022Position\u0022)"
+    },
+    {
+      "Name": "Employee[0].BaseSalary",
+      "Expression": "o => o.FieldArrayObject(0).Property<decimal>(\u0022BaseSalary\u0022)"
+    }
+  ]
+}

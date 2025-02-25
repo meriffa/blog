@@ -1,0 +1,14 @@
+{
+  "Description": "Extract 'ByteZoo*' Objects",
+  "Filter": "o => o.TypeName().StartsWith(\u0022ByteZoo\u0022)",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    }
+  ]
+}

@@ -14,6 +14,8 @@ dotnet sln ./Sources/ByteZoo.Blog.sln add ./Sources/ByteZoo.Blog.App/ByteZoo.Blo
 dotnet sln ./Sources/ByteZoo.Blog.sln add ./Sources/ByteZoo.Blog.Web/ByteZoo.Blog.Web.csproj
 
 # Add package references
+dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Microsoft.CodeAnalysis.CSharp.Scripting --version 4.8.0
+dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Microsoft.Diagnostics.Runtime
 dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Microsoft.EntityFrameworkCore.Design
 dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Microsoft.EntityFrameworkCore.Sqlite
 dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Microsoft.EntityFrameworkCore.SqlServer
@@ -30,3 +32,6 @@ dotnet add ./Sources/ByteZoo.Blog.Web/ByteZoo.Blog.Web.csproj package Swashbuckl
 # Add project references
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj reference ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj
 dotnet add ./Sources/ByteZoo.Blog.Web/ByteZoo.Blog.Web.csproj reference ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj
+
+# Display package dependencies
+dotnet nuget why ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj Microsoft.CodeAnalysis.CSharp.Scripting

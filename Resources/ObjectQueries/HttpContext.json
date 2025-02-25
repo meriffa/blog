@@ -1,0 +1,22 @@
+{
+  "Description": "Extract 'HttpContext' Objects",
+  "Filter": "o => o.Inherits(\u0022Microsoft.AspNetCore.Http.HttpContext\u0022)",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    },
+    {
+      "Name": "Active",
+      "Expression": "o => o.Field<bool>(\u0022_active\u0022)"
+    },
+    {
+      "Name": "HttpContext.Features",
+      "Expression": "o => o.HttpContextFeatures()"
+    }
+  ]
+}

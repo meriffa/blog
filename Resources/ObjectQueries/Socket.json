@@ -1,0 +1,74 @@
+{
+  "Description": "Extract 'Socket' Objects",
+  "Filter": "o => o.TypeName() == \u0022System.Net.Sockets.Socket\u0022",
+  "Fields": [
+    {
+      "Name": "Address",
+      "Expression": "o => o.AddressHex()"
+    },
+    {
+      "Name": "Type",
+      "Expression": "o => o.TypeName()"
+    },
+    {
+      "Name": "IsConnected",
+      "Expression": "o => o.Field<bool>(\u0022_isConnected\u0022)"
+    },
+    {
+      "Name": "IsDisconnected",
+      "Expression": "o => o.Field<bool>(\u0022_isDisconnected\u0022)"
+    },
+    {
+      "Name": "WillBlock",
+      "Expression": "o => o.Field<bool>(\u0022_willBlock\u0022)"
+    },
+    {
+      "Name": "IsListening",
+      "Expression": "o => o.Field<bool>(\u0022_isListening\u0022)"
+    },
+    {
+      "Name": "NonBlockingConnectInProgress",
+      "Expression": "o => o.Field<bool>(\u0022_nonBlockingConnectInProgress\u0022)"
+    },
+    {
+      "Name": "ReceivingPacketInformation",
+      "Expression": "o => o.Field<bool>(\u0022_receivingPacketInformation\u0022)"
+    },
+    {
+      "Name": "AddressFamily",
+      "Expression": "o => o.Field<System.Net.Sockets.AddressFamily>(\u0022_addressFamily\u0022).ToString()"
+    },
+    {
+      "Name": "SocketType",
+      "Expression": "o => o.Field<System.Net.Sockets.SocketType>(\u0022_socketType\u0022).ToString()"
+    },
+    {
+      "Name": "ProtocolType",
+      "Expression": "o => o.Field<System.Net.Sockets.ProtocolType>(\u0022_protocolType\u0022).ToString()"
+    },
+    {
+      "Name": "CloseTimeoutMS",
+      "Expression": "o => o.Field<int>(\u0022_closeTimeout\u0022)"
+    },
+    {
+      "Name": "RemoteEndPoint.IPAddress",
+      "Expression": "o => o.FieldObject(\u0022_remoteEndPoint\u0022).FieldObject(\u0022_address\u0022).IPAddress()"
+    },
+    {
+      "Name": "RemoteEndPoint.Port",
+      "Expression": "o => o.FieldObject(\u0022_remoteEndPoint\u0022).Field<int>(\u0022_port\u0022)"
+    },
+    {
+      "Name": "RightEndPoint.IPAddress",
+      "Expression": "o => o.FieldObject(\u0022_rightEndPoint\u0022).FieldObject(\u0022_address\u0022).IPAddress()"
+    },
+    {
+      "Name": "RightEndPoint.Port",
+      "Expression": "o => o.FieldObject(\u0022_rightEndPoint\u0022).Field<int>(\u0022_port\u0022)"
+    },
+    {
+      "Name": "Disposed",
+      "Expression": "o => o.Field<bool>(\u0022_disposed\u0022)"
+    }
+  ]
+}
