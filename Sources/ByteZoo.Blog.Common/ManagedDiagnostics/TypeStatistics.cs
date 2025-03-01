@@ -20,20 +20,25 @@ public class TypeStatistics(string name, ulong size)
     public ulong Count { get; set; } = 1;
 
     /// <summary>
-    /// Type statistics size
+    /// Type statistics object size
     /// </summary>
-    public ulong Size { get; set; } = size;
+    public ulong ObjectSize { get; init; } = size;
+
+    /// <summary>
+    /// Type statistics total size
+    /// </summary>
+    public ulong TotalSize { get; set; } = size;
     #endregion
 
     #region Public Methods
     /// <summary>
-    /// Update type statistics
+    /// Add type instance
     /// </summary>
-    /// <param name="size"></param>
-    public void Update(ulong size)
+    /// <param name="instanceSize"></param>
+    public void AddInstance(ulong instanceSize)
     {
         Count++;
-        Size += size;
+        TotalSize += instanceSize;
     }
     #endregion
 

@@ -93,7 +93,7 @@ public partial class ManagedMemoryController : Controller
     };
 
     /// <summary>
-    /// REturn random string
+    /// Return random string
     /// </summary>
     /// <param name="textLength"></param>
     /// <returns></returns>

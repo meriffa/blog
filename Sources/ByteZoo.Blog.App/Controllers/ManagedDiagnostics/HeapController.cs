@@ -96,14 +96,14 @@ public class HeapController : DumpController
                 if (!statistics.TryGetValue(clrObject.Type.MethodTable, out var type))
                     statistics.Add(clrObject.Type.MethodTable, type = new TypeStatistics(clrObject.Type.Name ?? "<N/A>", clrObject.Size));
                 else
-                    type.Update(clrObject.Size);
+                    type.AddInstance(clrObject.Size);
                 totalSize += clrObject.Size;
                 totalObjects++;
             }
         }
         foreach (var (methodTable, typeInstance) in statistics)
-            displayService.WriteInformation($"Type: MT = {GetAddress(methodTable)}, Count = {typeInstance.Count}, Size = {GetSize(typeInstance.Size)}, Name = {typeInstance.Name}");
-        displayService.WriteInformation($"Total: Objects = {totalObjects}, Size = {GetSize(totalSize)}");
+            displayService.WriteInformation($"Type: MT = {GetAddress(methodTable)}, Count = {typeInstance.Count}, Object Size = {GetSize(typeInstance.ObjectSize)}, Total Size = {GetSize(typeInstance.TotalSize)}, Name = {typeInstance.Name}");
+        displayService.WriteInformation($"Total: Objects = {totalObjects}, Total Size = {GetSize(totalSize)}");
     }
     #endregion
 

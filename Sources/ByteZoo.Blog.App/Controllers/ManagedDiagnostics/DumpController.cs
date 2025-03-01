@@ -31,6 +31,13 @@ public abstract class DumpController : Controller
     protected DataTarget GetDataTarget() => DataTarget.LoadDump(DumpFile);
 
     /// <summary>
+    /// Return DataTarget instance
+    /// </summary>
+    /// <param name="dumpFile"></param>
+    /// <returns></returns>
+    protected static DataTarget GetDataTarget(string dumpFile) => DataTarget.LoadDump(dumpFile);
+
+    /// <summary>
     /// Return ClrRuntime instance
     /// </summary>
     /// <param name="target"></param>
@@ -43,6 +50,13 @@ public abstract class DumpController : Controller
     /// <param name="value"></param>
     /// <returns></returns>
     public static string GetAddress(ulong? value) => value != null ? $"0x{value:X16}" : "N/A";
+
+    /// <summary>
+    /// Return formatted size
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    protected static string GetSize(ulong? value) => GetSize(value ?? 0);
 
     /// <summary>
     /// Return formatted size

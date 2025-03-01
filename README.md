@@ -40,3 +40,4 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [Application Hang](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(Application%20Hang).md)
   * [High CPU Usage](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(High%20CPU%20Usage).md)
   * [Application Crash](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(Application%20Crash).md)
+  * [Managed Memory Leak](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(Managed%20Memory%20Leak).md)
