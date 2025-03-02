@@ -34,9 +34,9 @@ public partial class ManagedMemoryController : Controller
     public int TextLength { get; set; }
 
     /// <summary>
-    /// Allocation delay
+    /// Allocation delay [sec]
     /// </summary>
-    [Option('d', "allocationDelay", Default = 1000, HelpText = "Allocation delay (ms).")]
+    [Option('d', "allocationDelay", Default = 1, HelpText = "Allocation delay (sec).")]
     public int AllocationDelay { get; set; }
 
     #endregion
@@ -73,7 +73,7 @@ public partial class ManagedMemoryController : Controller
             displayService.WriteInformation($"Employee instances allocated (Count = {allocationBatch}, Total = {workforce.Employees.Count}).");
             if (cancellationToken.IsCancellationRequested)
                 break;
-            await Task.Delay(allocationDelay, cancellationToken);
+            await Task.Delay(TimeSpan.FromSeconds(allocationDelay), cancellationToken);
         }
     }
 

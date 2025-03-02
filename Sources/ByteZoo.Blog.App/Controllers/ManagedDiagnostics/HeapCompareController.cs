@@ -130,7 +130,7 @@ public class HeapCompareController : DumpController
     private void DisplayHeapObjectTypeStatistics(Dictionary<ulong, TypeStatisticsCompare> statistics)
     {
         foreach (var (methodTable, typeInstance) in statistics)
-            displayService.WriteInformation($"Type: MT = {GetAddress(methodTable)}, Count [{typeInstance.Source?.Count}, {typeInstance.Target?.Count}], Object Size = [{typeInstance.Source?.ObjectSize}, {typeInstance.Target?.ObjectSize}], Total Size = [{typeInstance.Source?.TotalSize}, {typeInstance.Target?.TotalSize}], Name = {typeInstance.Source?.Name ?? typeInstance.Target?.Name}");
+            displayService.WriteInformation($"Type: MT = {GetAddress(methodTable)}, Count [{typeInstance.Source?.Count}, {typeInstance.Target?.Count}], Total Size = [{typeInstance.Source?.TotalSize}, {typeInstance.Target?.TotalSize}], Name = {typeInstance.Source?.Name ?? typeInstance.Target?.Name}");
     }
     #endregion
 
