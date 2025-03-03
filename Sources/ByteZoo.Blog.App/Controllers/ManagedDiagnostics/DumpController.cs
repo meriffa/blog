@@ -1,5 +1,6 @@
 using CommandLine;
 using Microsoft.Diagnostics.Runtime;
+using System.Runtime.InteropServices;
 
 namespace ByteZoo.Blog.App.Controllers.ManagedDiagnostics;
 
@@ -42,7 +43,14 @@ public abstract class DumpController : Controller
     /// </summary>
     /// <param name="target"></param>
     /// <returns></returns>
-    protected ClrRuntime GetClrRuntime(DataTarget target) => string.IsNullOrEmpty(DacFile) ? target.ClrVersions[0].CreateRuntime() : target.ClrVersions[0].CreateRuntime(DacFile);
+    protected ClrRuntime GetClrRuntime(DataTarget target)
+    {
+        if (target.DataReader.Architecture != RuntimeInformation.ProcessArchitecture || target.DataReader.PointerSize != IntPtr.Size)
+            throw new($"The core dump architecture '{target.DataReader.Architecture}' does not match the current process architecture.");
+        if (!RuntimeInformation.IsOSPlatform(target.DataReader.TargetPlatform))
+            throw new($"The core dump platform '{target.DataReader.TargetPlatform}' does not match the current process platform.");
+        return string.IsNullOrEmpty(DacFile) ? target.ClrVersions[0].CreateRuntime() : target.ClrVersions[0].CreateRuntime(DacFile);
+    }
 
     /// <summary>
     /// Return formatted address value

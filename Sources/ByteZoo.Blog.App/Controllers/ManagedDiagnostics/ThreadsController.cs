@@ -24,16 +24,22 @@ public class ThreadsController : DumpController
     public int? ThreadId { get; set; }
 
     /// <summary>
+    /// Include stack trace
+    /// </summary>
+    [Option("includeStackTrace", HelpText = "Include stack trace.")]
+    public bool IncludeStackTrace { get; set; }
+
+    /// <summary>
     /// Filter stack frame by index
     /// </summary>
     [Option("stackFrameIndex", HelpText = "Filter stack frame by index.")]
     public int? StackFrameIndex { get; set; }
 
     /// <summary>
-    /// Include stack trace
+    /// Include stack objects
     /// </summary>
-    [Option("includeStackTrace", HelpText = "Include stack trace.")]
-    public bool IncludeStackTrace { get; set; }
+    [Option("includeStackObjects", HelpText = "Include stack objects.")]
+    public bool IncludeStackObjects { get; set; }
     #endregion
 
     #region Protected Methods
@@ -44,6 +50,7 @@ public class ThreadsController : DumpController
     {
         using var target = GetDataTarget();
         using var runtime = GetClrRuntime(target);
+        var heap = runtime.Heap;
         foreach (var thread in runtime.Threads)
             if (ThreadId == null || thread.ManagedThreadId == ThreadId)
             {
@@ -51,7 +58,7 @@ public class ThreadsController : DumpController
                 var executionContext = GetExecutionContext(clrObject);
                 displayService.WriteInformation($"Thread: ID = {thread.ManagedThreadId,4}, OS ID = {thread.OSThreadId:X4}, Address = {GetAddress(thread.Address)}, Live = {thread.IsAlive}, GC = {thread.IsGc}, GC Mode = {thread.GCMode}, State = {GetThreadState(thread.State)}, Finalizer = {thread.IsFinalizer}, Lock Count = {(int)thread.LockCount}, Exception = {thread.CurrentException?.ToString() ?? "<None>"}, Thread Object = {GetAddress(clrObject?.Address)}, Thread Execution Context = {GetAddress(executionContext?.Address)}");
                 if (IncludeStackTrace)
-                    DisplayStackTrace(thread);
+                    DisplayStackTrace(target, heap, thread);
             }
     }
     #endregion
@@ -60,16 +67,41 @@ public class ThreadsController : DumpController
     /// <summary>
     /// Display stack trace
     /// </summary>
+    /// <param name="target"></param>
+    /// <param name="heap"></param>
     /// <param name="thread"></param>
-    private void DisplayStackTrace(ClrThread thread)
+    private void DisplayStackTrace(DataTarget target, ClrHeap heap, ClrThread thread)
     {
         var stackFrameIndex = 0;
+        ulong? lastStackPointer = null;
         foreach (var frame in thread.EnumerateStackTrace())
         {
             if (StackFrameIndex == null || stackFrameIndex == StackFrameIndex)
-                displayService.WriteInformation($"Stack Frame #{stackFrameIndex}: SP = {GetAddress(frame.StackPointer)}, IP = {GetAddress(frame.InstructionPointer)}, Kind = {frame.Kind}, Call Site = {frame.Method?.ToString() ?? frame.ToString()}");
+            {
+                displayService.WriteInformation($"Stack Frame #{stackFrameIndex}: SP = {GetAddress(frame.StackPointer)}-{GetAddress(lastStackPointer)}, IP = {GetAddress(frame.InstructionPointer)}, Kind = {frame.Kind}, Call Site = {frame.Method?.ToString() ?? frame.ToString()}");
+                if (IncludeStackObjects && lastStackPointer != null)
+                    DisplayStackObjects(target, heap, frame.StackPointer, lastStackPointer.Value);
+            }
             stackFrameIndex++;
+            lastStackPointer = frame.StackPointer;
         }
+    }
+
+    /// <summary>
+    /// Display stack objects
+    /// </summary>
+    /// <param name="target"></param>
+    /// <param name="heap"></param>
+    /// <param name="stackPointer"></param>
+    /// <param name="lastStackPointer"></param>
+    private void DisplayStackObjects(DataTarget target, ClrHeap heap, ulong stackPointer, ulong lastStackPointer)
+    {
+        for (ulong address = stackPointer, pointerSize = (ulong)IntPtr.Size; address > lastStackPointer; address -= pointerSize)
+            if (target.DataReader.ReadPointer(address, out var pointer))
+                if (heap.GetObjectType(pointer) is ClrType type)
+                    displayService.WriteInformation($"Stack Object {GetAddress(address)}: Pointer {GetAddress(pointer)}, Type = {type.Name}");
+                else
+                    displayService.WriteInformation($"Stack Object {GetAddress(address)}: Value {GetAddress(pointer)}");
     }
 
     /// <summary>

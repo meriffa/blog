@@ -121,42 +121,34 @@
 * Clear command history                                   `rm ~/.lldb/lldb-widehistory`
 * Run command and capture output                          `lldb -c <CoreDump> dotnet --batch -o "<command>" > <File.log>`
 
-## System.String
+## Repositories
 
-- !wfrom -type System.String where $substr($string(), 0, 6) == "User 0" select $a("Address\t", $addr()), $a("Value\t", $string()), $a("Length\t", _stringLength)
+* [.NET Runtime](https://github.com/dotnet/runtime)
+* [.NET Core Diagnostics](https://github.com/dotnet/diagnostics)
+* [.NET Compiler Platform](https://github.com/dotnet/roslyn)
+* [.NET SDK](https://github.com/dotnet/sdk)
+* [ASP.NET Core](https://github.com/dotnet/aspnetcore)
+* [C# Language Design](https://github.com/dotnet/csharplang)
+* [Install Scripts](https://github.com/dotnet/install-scripts)
+* [.NET API Catalog](https://apisof.net)
+* [.NET API Browser](https://learn.microsoft.com/dotnet/api)
+* [.NET Source Browser](https://source.dot.net)
 
-## System.Collections.Generic.Dictionary<TKey, TValue>
+## Tools
 
-- .foreach ($instance {!wheap -type System.Collections.Generic.Dictionary* -short}) {.echo "${$instance}-${$instance}"}
-- .foreach ($instance {!windex -short -type System.Collections.Generic.Dictionary*}) {!wselect * from $instance}
-- !wfrom -type System.Collections.Generic.Dictionary* where ($contains($typename(), "<System.")) && (_count > 0) select $typename(), _count
-
-## System.Net.Http.HttpClient
-
-- Active Requests
-  !wfrom -type *.HttpConnection where (_inUse == 1) select $addr(), _currentRequest._method._method, _currentRequest._requestUri._string
-  !wfrom -type *.HttpClient where (_disposed == 0) select $addr()
-  .foreach ($instance {!DumpHeap -short -type HttpClient+<<SendAsync>}) {!wfrom -obj $instance where (m_result == 0) select StateMachine.__4__this, StateMachine.request._requestUri._string}
-  .foreach ($instance {!DumpHeap -short -type <SendAsyncCore>}) {!wfrom -obj $instance where (m_result == 0) select StateMachine.__4__this, StateMachine.request._requestUri._string}
-- Completed Requests
-  !wfrom -type *.HttpResponseMessage select $addr(), _statusCode, _requestMessage._method._method, _requestMessage._requestUri._string, $rawfield(_content._bufferedContent._buffer)
-  !wfrom -type *.HttpConnection where (_inUse == 0) select $addr()
-  !wfrom -type *.HttpClient where (_disposed == 1) select $addr()
-  .foreach ($instance {!DumpHeap -short -type HttpClient+<<SendAsync>}) {!wfrom -obj $instance where (m_result != 0) select m_result}
-  .foreach ($instance {!DumpHeap -short -type <SendAsyncCore>}) {!wfrom -obj $instance where (m_result != 0) select m_result}
-- All Requests
-  !wfrom -type *.HttpConnection select $addr(), _inUse
-  !wfrom -type *.HttpClient select $addr(), _disposed
-  !wfrom -type *.HttpRequestMessage select $addr(), _method._method, _requestUri._string
-
-## Kestrel
-
-- Active Requests
-  !wfrom -type *.Http.Http1Connection* where (_requestProcessingStatus != 0) select $addr(), _methodText, _parsedRawTarget, _requestId, _endpoint._DisplayName_k__BackingField, _responseBytesWritten, _requestProcessingStatus
-  !wfrom -type *.Http.DefaultHttpContext select $addr(), _request._features._Collection_k__BackingField._methodText, _request._features._Collection_k__BackingField._parsedRawTarget, _request._features._Collection_k__BackingField._requestId, _request._features._Collection_k__BackingField._endpoint._DisplayName_k__BackingField, _request._features._Collection_k__BackingField._responseBytesWritten, _request._features._Collection_k__BackingField._requestProcessingStatus, _response._features._Collection_k__BackingField._requestId, _response._features._Collection_k__BackingField._responseBytesWritten, _response._features._Collection_k__BackingField._requestProcessingStatus
-  !wfrom -type *.Http.DefaultHttpRequest select $addr(), _features._Collection_k__BackingField._methodText, _features._Collection_k__BackingField._parsedRawTarget, _features._Collection_k__BackingField._requestId, _features._Collection_k__BackingField._endpoint._DisplayName_k__BackingField, _features._Collection_k__BackingField._responseBytesWritten, _features._Collection_k__BackingField._requestProcessingStatus
-  !wfrom -type *.Http.DefaultHttpResponse select $addr(), _features._Collection_k__BackingField._methodText, _features._Collection_k__BackingField._parsedRawTarget, _features._Collection_k__BackingField._requestId, _features._Collection_k__BackingField._endpoint._DisplayName_k__BackingField, _features._Collection_k__BackingField._responseBytesWritten, _features._Collection_k__BackingField._requestProcessingStatus
-- Pending Requests
-  !wfrom -type *.Http.Http1Connection* where (_requestProcessingStatus == 0) select $addr(), _parsedRawTarget
-- List Middlewares
-  !wfrom -type *Middleware select $addr(), $typename()
+* [Visual Studio Code](https://code.visualstudio.com)
+* [LLDB](https://lldb.llvm.org/)
+* [SOS](https://learn.microsoft.com/dotnet/core/diagnostics/sos-debugging-extension)
+* [Microsoft.Diagnostics.Runtime](https://github.com/microsoft/clrmd)
+* [Microsoft.Diagnostics.NETCore.Client](https://learn.microsoft.com/dotnet/core/diagnostics/diagnostics-client-library)
+* [createdump](https://github.com/dotnet/runtime/blob/main/docs/design/coreclr/botr/xplat-minidump-generation.md)
+* [dotnet-dump](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-dump)
+* [dotnet-counters](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-counters)
+* [dotnet-trace](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-trace)
+* [dotnet-debugger-extensions](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-debugger-extensions)
+* [dotnet-sos](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-sos)
+* [dotnet-symbol](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-symbol)
+* [dotnet-install](https://learn.microsoft.com/dotnet/core/tools/dotnet-install-script)
+* [dnSpy](https://github.com/dnSpyEx/dnSpy)
+* [ILSpy](https://github.com/icsharpcode/ILSpy)
+* [ProcDump](https://github.com/microsoft/ProcDump-for-Linux)

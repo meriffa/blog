@@ -32,7 +32,4 @@ public class StackObjectsController : DumpController
     }
     #endregion
 
-    #region Private Methods
-    #endregion
-
 }
