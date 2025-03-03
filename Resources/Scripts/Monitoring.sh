@@ -9,3 +9,6 @@ dotnet-counters list                                                            
 dotnet-counters monitor -p <PID> --refresh-interval 1 --counters System.Runtime                 # Monitor System.Runtime counters
 dotnet-counters monitor -p <PID> --refresh-interval 1 --counters System.Runtime[dotnet.gc.heap.total_allocated]
 dotnet-counters monitor -p <PID> --refresh-interval 1 --counters System.Runtime[dotnet.gc.collections]
+
+# Install dotnet-trace
+dotnet tool install --global dotnet-trace
