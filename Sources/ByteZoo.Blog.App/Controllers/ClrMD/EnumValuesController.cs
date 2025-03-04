@@ -1,6 +1,6 @@
 using CommandLine;
 
-namespace ByteZoo.Blog.App.Controllers.ManagedDiagnostics;
+namespace ByteZoo.Blog.App.Controllers.ClrMD;
 
 /// <summary>
 /// Enum values viewer controller

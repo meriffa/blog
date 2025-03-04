@@ -2,7 +2,7 @@ using CommandLine;
 using Microsoft.Diagnostics.Runtime;
 using System.Text;
 
-namespace ByteZoo.Blog.App.Controllers.ManagedDiagnostics;
+namespace ByteZoo.Blog.App.Controllers.ClrMD;
 
 /// <summary>
 /// Object viewer controller (dumpobj)

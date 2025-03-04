@@ -1,7 +1,7 @@
 using ByteZoo.Blog.Common.ObjectQuery;
 using CommandLine;
 
-namespace ByteZoo.Blog.App.Controllers.ManagedDiagnostics;
+namespace ByteZoo.Blog.App.Controllers.ClrMD;
 
 /// <summary>
 /// Object query controller

@@ -1,7 +1,7 @@
 using CommandLine;
 using Microsoft.Diagnostics.Runtime;
 
-namespace ByteZoo.Blog.App.Controllers.ManagedDiagnostics;
+namespace ByteZoo.Blog.App.Controllers.ClrMD;
 
 /// <summary>
 /// Native heap segments viewer controller (eeheap -loader)
