@@ -131,8 +131,8 @@
 * [C# Language Design](https://github.com/dotnet/csharplang)
 * [Install Scripts](https://github.com/dotnet/install-scripts)
 * [.NET API Catalog](https://apisof.net)
-* [.NET API Browser](https://learn.microsoft.com/dotnet/api)
-* [.NET Source Browser](https://source.dot.net)
+* [.NET API Source Browser](https://source.dot.net)
+* [.NET API Documentation Browser](https://learn.microsoft.com/dotnet/api)
 
 ## Tools
 
