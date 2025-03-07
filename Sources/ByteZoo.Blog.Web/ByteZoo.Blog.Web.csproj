@@ -5,7 +5,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ByteZoo.Blog.Common\ByteZoo.Blog.Common.csproj" />
+    <ProjectReference Include="../ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj" />
   </ItemGroup>
 
 </Project>

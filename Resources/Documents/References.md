@@ -153,3 +153,12 @@
 * [dnSpy](https://github.com/dnSpyEx/dnSpy)
 * [ILSpy](https://github.com/icsharpcode/ILSpy)
 * [ProcDump](https://github.com/microsoft/ProcDump-for-Linux)
+
+## Unmanaged API
+
+* [DllGetClassObject Function](https://learn.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-dllgetclassobject)
+* [IClassFactory Interface](https://learn.microsoft.com/windows/win32/api/unknwn/nn-unknwn-iclassfactory)
+* [Profiling Unmanaged API (Part 1)](https://learn.microsoft.com/dotnet/framework/unmanaged-api/profiling/)
+* [Profiling Unmanaged API (Part 2)](https://learn.microsoft.com/dotnet/core/unmanaged-api/profiling/)
+* [Debugging Unmanaged API (Part 1)](https://learn.microsoft.com/dotnet/framework/unmanaged-api/debugging/)
+* [Debugging Unmanaged API (Part 2)](https://learn.microsoft.com/dotnet/core/unmanaged-api/debugging/)
