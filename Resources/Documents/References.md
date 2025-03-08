@@ -153,6 +153,9 @@
 * [dnSpy](https://github.com/dnSpyEx/dnSpy)
 * [ILSpy](https://github.com/icsharpcode/ILSpy)
 * [ProcDump](https://github.com/microsoft/ProcDump-for-Linux)
+* [Code Compiler & Decompiler](https://sharplab.io)
+* [Custom Profiler](https://learn.microsoft.com/dotnet/framework/unmanaged-api/profiling/)
+* [Custom Debugger](https://learn.microsoft.com/dotnet/framework/unmanaged-api/debugging/)
 
 ## Unmanaged API
 

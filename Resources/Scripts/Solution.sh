@@ -17,6 +17,7 @@ dotnet sln ./Sources/ByteZoo.Blog.sln add ./Sources/ByteZoo.Blog.Web/ByteZoo.Blo
 
 # Add package references
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package BenchmarkDotNet
+dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package ClrDebug
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package CommandLineParser
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package Microsoft.Diagnostics.NETCore.Client
 dotnet add ./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj package Microsoft.Diagnostics.Runtime

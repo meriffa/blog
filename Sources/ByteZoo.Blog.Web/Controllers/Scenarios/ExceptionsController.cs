@@ -16,7 +16,6 @@ public class ExceptionsController(ILogger<ExceptionsController> logger) : Contro
     /// Exception (Unhandled Exception)
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="UnhandledException"></exception>
     [HttpGet]
     public ActionResult Crash()
     {
