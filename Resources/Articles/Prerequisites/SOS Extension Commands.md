@@ -64,6 +64,7 @@ sethostruntime -major <Number> <DebuggerHostRuntimeFolder>
 ```dhe -d StringSummary -min 300 -max 600```
 ```dhe -d Free -min 25```
 ```dhe -d FreeSummary -min 25```
+```dhe -d Object -type ByteZoo.Blog.App -t console```
 ```dhe -d Object -type ByteZoo.Blog.App -t json```
 ```dhe -d Object -type ByteZoo.Blog.App -t json -o ./output.json```
 ```dhe -d Object -type ByteZoo.Blog.App -t csv```
@@ -77,6 +78,12 @@ sethostruntime -major <Number> <DebuggerHostRuntimeFolder>
 ```dev -mt 7FC6497EEB80```
 ```dev -type ByteZoo.Blog.Common.Models.Business.EmployeeEventType```
 ```dev -type ByteZoo.Blog.Common.Models.Business.EmployeeEventType -module ByteZoo.Blog.Common.dll```
+
+## DumpModulesExport
+
+```dme```
+```dme -name ByteZoo.Blog```
+```dme -name ByteZoo.Blog -types```
 
 ## References
 
