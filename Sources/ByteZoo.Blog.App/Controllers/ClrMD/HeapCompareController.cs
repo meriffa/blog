@@ -15,7 +15,7 @@ public class HeapCompareController : DumpController
     /// <summary>
     /// Dump compare file
     /// </summary>
-    [Option("compareFile", Required = true, HelpText = "Dump compare file.")]
+    [Option('c', "compareFile", Required = true, HelpText = "Dump compare file.")]
     public string CompareFile { get; set; } = null!;
 
     /// <summary>

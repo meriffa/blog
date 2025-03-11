@@ -14,7 +14,7 @@ public abstract class DumpController : Controller
     /// <summary>
     /// Dump file
     /// </summary>
-    [Option("dumpFile", Required = true, HelpText = "Dump file.")]
+    [Option('d', "dumpFile", Required = true, HelpText = "Dump file.")]
     public string DumpFile { get; set; } = null!;
 
     /// <summary>

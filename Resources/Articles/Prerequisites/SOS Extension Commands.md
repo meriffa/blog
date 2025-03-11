@@ -40,7 +40,7 @@ or
 
 ```
 lldb -c CoreDump_Full.<PID> dotnet -o "dhe -d FreeSummary" -o "exit"
-~/Development/SOS/artifacts/bin/dotnet-dump/Debug/net8.0/dotnet-dump analyze CoreDump_Full.<PID> -c "dhe -d FreeSummary" -c "exit"
+~/Development/SOS/artifacts/bin/dotnet-dump/Debug/net8.0/publish/dotnet-dump analyze CoreDump_Full.<PID> -c "dhe -d FreeSummary" -c "exit"
 ```
 
 ## Troubleshooting
@@ -71,6 +71,12 @@ sethostruntime -major <Number> <DebuggerHostRuntimeFolder>
 ```dhe -d ObjectSummary -type ByteZoo.Blog.App```
 ```dhe -d ObjectFragmentationSummary -minFragmentationBlockSize 25```
 ```dhe -d ThinLock```
+
+## DumpEnumValues
+
+```dev -mt 7FC6497EEB80```
+```dev -type ByteZoo.Blog.Common.Models.Business.EmployeeEventType```
+```dev -type ByteZoo.Blog.Common.Models.Business.EmployeeEventType -module ByteZoo.Blog.Common.dll```
 
 ## References
 
