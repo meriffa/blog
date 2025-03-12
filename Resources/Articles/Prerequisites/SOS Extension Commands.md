@@ -92,6 +92,41 @@ sethostruntime -major <Number> <DebuggerHostRuntimeFolder>
 ```dse -contain "Application" -i```
 ```dse "bytezoo.blog.app" -i```
 
+## DumpSingle
+
+```dumpsingle -value 42F6E979```
+```dumpsingle 7f7e4606bf30```
+
+## DumpDouble
+
+```dumpdouble -value 4081BF1EB851EB85```
+```dumpdouble 7f7e4606bf28```
+
+## DumpDecimal
+
+```dumpdecimal -valueLow 0000000000060000 -valueHigh 0000001A21A278BE```
+```dumpdecimal 7f7e4606bf48```
+
+## DumpDateTime
+
+```dumpdatetime -value 08DD60F1FFC7431C```
+```dumpdatetime 7f7e4606bf58```
+
+## DumpTimeSpan
+
+```dumptimespan -value 00000EE3A90E8B7A```
+```dumptimespan 7f7e4606bf60```
+
+## DumpDateOnly
+
+```dumpdateonly -value 000B47EE```
+```dumpdateonly 7f7e4606bf68```
+
+## DumpTimeOnly
+
+```dumptimeonly -value 000000B6277E9FE0```
+```dumptimeonly 7f7e4606bf70```
+
 ## References
 
 * [Single File Diagnostic Tools](https://github.com/dotnet/diagnostics/blob/main/documentation/single-file-tools.md)
