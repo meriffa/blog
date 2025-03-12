@@ -85,6 +85,13 @@ sethostruntime -major <Number> <DebuggerHostRuntimeFolder>
 ```dme -name ByteZoo.Blog```
 ```dme -name ByteZoo.Blog -types```
 
+## DumpStringsExport
+
+```dse -start "ByteZoo.Blog"```
+```dse -end " completed."```
+```dse -contain "Application" -i```
+```dse "bytezoo.blog.app" -i```
+
 ## References
 
 * [Single File Diagnostic Tools](https://github.com/dotnet/diagnostics/blob/main/documentation/single-file-tools.md)
