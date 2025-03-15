@@ -44,3 +44,4 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [Application Crash](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(Application%20Crash).md)
   * [Managed Memory Leak](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(Managed%20Memory%20Leak).md)
   * [Managed Memory Leak, PerfView](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(Managed%20Memory%20Leak,%20PerfView).md)
+  * [Performance, Stress Log](/Resources/Articles/Troubleshooting/.NET%20Core%20Troubleshooting%20(Performance,%20Stress%20Log).md)

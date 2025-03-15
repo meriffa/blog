@@ -27,11 +27,38 @@ public class Employee(string position) : Person
     public required List<EmployeeEvent> Events { get; set; }
     #endregion
 
+    #region Static Fields
+    /// <summary>
+    /// Empty instance
+    /// </summary>
+    internal static Employee Empty;
+    #endregion
+
     #region Events
     /// <summary>
     /// Position changed event
     /// </summary>
     public event EventHandler<PositionChangedArgs>? PositionChanged;
+    #endregion
+
+    #region Private Methods
+    /// <summary>
+    /// Return empty employee
+    /// </summary>
+    /// <returns></returns>
+    static Employee()
+    {
+        Thread.Sleep(Random.Shared.Next(100));
+        Empty = new("")
+        {
+            Id = 0,
+            Name = new() { First = "", Last = "" },
+            DateOfBirth = DateTime.MinValue,
+            EyeColor = PersonEyeColor.Brown,
+            BaseSalary = 0m,
+            Events = []
+        };
+    }
     #endregion
 
     #region Public Methods

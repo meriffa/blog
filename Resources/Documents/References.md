@@ -121,6 +121,19 @@
 * Clear command history                                   `rm ~/.lldb/lldb-widehistory`
 * Run command and capture output                          `lldb -c <CoreDump> dotnet --batch -o "<command>" > <File.log>`
 
+## Documentation
+
+* [.NET Internals](https://github.com/dotnet/runtime/tree/main/docs/design/coreclr/botr)
+* [.NET GC Internals](https://github.com/Maoni0/mem-doc/blob/master/doc/.NETMemoryPerformanceAnalysis.md)
+* [.NET Runtime Documentation](https://github.com/dotnet/runtime/tree/main/docs)
+* [DllGetClassObject Function](https://learn.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-dllgetclassobject)
+* [IClassFactory Interface](https://learn.microsoft.com/windows/win32/api/unknwn/nn-unknwn-iclassfactory)
+* [Profiling Unmanaged API (Part 1)](https://learn.microsoft.com/dotnet/framework/unmanaged-api/profiling/)
+* [Profiling Unmanaged API (Part 2)](https://learn.microsoft.com/dotnet/core/unmanaged-api/profiling/)
+* [Debugging Unmanaged API (Part 1)](https://learn.microsoft.com/dotnet/framework/unmanaged-api/debugging/)
+* [Debugging Unmanaged API (Part 2)](https://learn.microsoft.com/dotnet/core/unmanaged-api/debugging/)
+* [.NET Environment Variables](https://github.com/dotnet/runtime/blob/main/src/coreclr/inc/clrconfigvalues.h)
+
 ## Repositories
 
 * [.NET Runtime](https://github.com/dotnet/runtime)
@@ -156,12 +169,3 @@
 * [Code Compiler & Decompiler](https://sharplab.io)
 * [Custom Profiler](https://learn.microsoft.com/dotnet/framework/unmanaged-api/profiling/)
 * [Custom Debugger](https://learn.microsoft.com/dotnet/framework/unmanaged-api/debugging/)
-
-## Unmanaged API
-
-* [DllGetClassObject Function](https://learn.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-dllgetclassobject)
-* [IClassFactory Interface](https://learn.microsoft.com/windows/win32/api/unknwn/nn-unknwn-iclassfactory)
-* [Profiling Unmanaged API (Part 1)](https://learn.microsoft.com/dotnet/framework/unmanaged-api/profiling/)
-* [Profiling Unmanaged API (Part 2)](https://learn.microsoft.com/dotnet/core/unmanaged-api/profiling/)
-* [Debugging Unmanaged API (Part 1)](https://learn.microsoft.com/dotnet/framework/unmanaged-api/debugging/)
-* [Debugging Unmanaged API (Part 2)](https://learn.microsoft.com/dotnet/core/unmanaged-api/debugging/)
