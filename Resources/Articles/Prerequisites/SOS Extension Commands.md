@@ -127,6 +127,12 @@ sethostruntime -major <Number> <DebuggerHostRuntimeFolder>
 ```dumptimeonly -value 000000B6277E9FE0```
 ```dumptimeonly 7f7e4606bf70```
 
+## DumpGCHandlesExport
+
+```dgche -d Handles -k Strong```
+```dgche -d Statistics```
+```dgche -d Totals```
+
 ## References
 
 * [Single File Diagnostic Tools](https://github.com/dotnet/diagnostics/blob/main/documentation/single-file-tools.md)
