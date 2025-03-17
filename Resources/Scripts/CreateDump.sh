@@ -37,10 +37,63 @@ DownloadSymbols() {
   echo ".NET Core dump symbols downloaded (Folder = '$2')."
 }
 
+# Return memory type text
+GetMemoryTypeText() {
+  case "${1,,}" in
+    "virtual") echo "Virtual (VmSize)" ;;
+    "resident") echo "Resident (VmRSS)" ;;
+    "residentanonymous") echo "Resident Anonymous (RssAnon)" ;;
+    "residentshared") echo "Resident Shared (RssShmem)" ;;
+    "swap") echo "Swap (VmSwap)" ;;
+    "used") echo "Used (VmRSS + VmSwap)" ;;
+    "shared") echo "Shared (RssFile + RssShmem)" ;;
+    "code") echo "Code (VmExe)" ;;
+    "data") echo "Data (VmData)" ;;
+    *) echo "" ;;
+  esac
+}
+
+# Return memory allocation
+GetMemoryAllocation() {
+  case "${1,,}" in
+    "virtual") [[ -f "/proc/$2/status" ]] && echo $(grep VmSize /proc/$2/status | awk '{print $2}') || echo "" ;;
+    "resident") [[ -f "/proc/$2/status" ]] && echo $(grep VmRSS /proc/$2/status | awk '{print $2}') || echo "" ;;
+    "residentanonymous") [[ -f "/proc/$2/status" ]] && echo $(grep RssAnon /proc/$2/status | awk '{print $2}') || echo "" ;;
+    "residentshared") [[ -f "/proc/$2/status" ]] && echo $(grep RssShmem /proc/$2/status | awk '{print $2}') || echo "" ;;
+    "swap") [[ -f "/proc/$2/status" ]] && echo $(grep VmSwap /proc/$2/status | awk '{print $2}') || echo "" ;;
+    "used") [[ -f "/proc/$2/status" ]] && echo $(($(grep VmRSS /proc/$2/status | awk '{print $2}') + $(grep VmSwap /proc/$2/status | awk '{print $2}'))) || echo "" ;;
+    "shared") [[ -f "/proc/$2/status" ]] && echo $(($(grep RssFile /proc/$2/status | awk '{print $2}') + $(grep RssShmem /proc/$2/status | awk '{print $2}'))) || echo "" ;;
+    "code") [[ -f "/proc/$2/status" ]] && echo $(grep VmExe /proc/$2/status | awk '{print $2}') || echo "" ;;
+    "data") [[ -f "/proc/$2/status" ]] && echo $(grep VmData /proc/$2/status | awk '{print $2}') || echo "" ;;
+    *) echo "" ;;
+  esac
+}
+
+# Wait for memory allocation threshold
+WaitForMemoryAllocationThreshold() {
+  local MEMORY_TYPE=$(GetMemoryTypeText $3)
+  [[ -z $MEMORY_TYPE ]] && DisplayErrorAndStop "Invalid memory type '$3' specified (Virtual, Resident, ResidentAnonymous, ResidentShared, Swap, Used, Shared, Code, Data)."
+  echo "Waiting for memory allocation to reach the specified threshold (PID = $1, $MEMORY_TYPE = $2 KB)."
+  while : ; do
+    local MEMORY_ALLOCATION=$(GetMemoryAllocation $3 $1)
+    if [ "$MEMORY_ALLOCATION" == "" ]; then
+      return -1;
+    fi
+    if (( $MEMORY_ALLOCATION >= $2 )); then
+      echo "Memory allocation threshold reached (PID = $1, $MEMORY_TYPE = $MEMORY_ALLOCATION KB)."
+      return 0;
+    fi
+    echo "Current memory allocation (PID = $1, $MEMORY_TYPE = $MEMORY_ALLOCATION KB)."
+    sleep $FLAG_INTERVAL
+  done
+}
+
 # Get parameters
 FLAG_OUTPUT_FILE="./CoreDump_Full.%p"
 FLAG_SYMBOLS_FOLDER=~/Symbols
-PARSED_ARGUMENTS=$(getopt -q --alternative --options n:,o:,s,f:,c --longoptions name:,output:,symbols,folder:,gc -- "$@")
+FLAG_MEMORY_THRESHOLD_TYPE="Used"
+FLAG_INTERVAL=5
+PARSED_ARGUMENTS=$(getopt -q --alternative --options n:,o:,s,f:,c,m: --longoptions name:,output:,symbols,folder:,gc,memory:,memoryType:,interval: -- "$@")
 eval set -- "$PARSED_ARGUMENTS"
 while : ; do
   case "$1" in
@@ -49,6 +102,9 @@ while : ; do
     -s | --symbols) FLAG_SYMBOLS_DOWNLOAD="TRUE"; shift ;;
     -f | --folder) FLAG_SYMBOLS_FOLDER="$2"; shift 2 ;;
     -c | --gc) FLAG_TRIGGER_GC="TRUE"; shift ;;
+    -m | --memory) FLAG_MEMORY_THRESHOLD="$2"; shift 2 ;;
+    --memoryType) FLAG_MEMORY_THRESHOLD_TYPE="$2"; shift 2 ;;
+    --interval) FLAG_INTERVAL="$2"; shift 2 ;;
     --) shift; break ;;
   esac
 done
@@ -57,9 +113,11 @@ done
 [ -z $FLAG_TARGET_NAME ] && DisplayErrorAndStop "Target process name (-n|--name) is not specified."
 TARGET_PID=$(GetTargetProcessId $FLAG_TARGET_NAME)
 [ -z $TARGET_PID ] && DisplayErrorAndStop "Target .NET Core process name '$FLAG_TARGET_NAME' is not found."
-
+if [ ! -z $FLAG_MEMORY_THRESHOLD ]; then
+  WaitForMemoryAllocationThreshold $TARGET_PID $FLAG_MEMORY_THRESHOLD $FLAG_MEMORY_THRESHOLD_TYPE
+  [ $? != 0 ] && DisplayErrorAndStop "Process terminated (PID = $TARGET_PID)."
+fi
 [ ! -z $FLAG_TRIGGER_GC ] && TriggerGCCollect $TARGET_PID
-
 OUTPUT_FILE=$(CaptureDotNetCoreDump $TARGET_PID $FLAG_OUTPUT_FILE)
 [ -z $OUTPUT_FILE ] && DisplayErrorAndStop "Capture .NET Core dump operation failed."
 echo ".NET Core dump created (PID = $TARGET_PID, File = '$OUTPUT_FILE')."
