@@ -88,12 +88,34 @@ WaitForMemoryAllocationThreshold() {
   done
 }
 
+# Return CPU utilization
+GetCpuUtilization() {
+  [[ -f "/proc/$1/status" ]] && echo $(top -b -n 1 -p $1 | tail -1 | awk '{print $9}') || echo ""
+}
+
+# Wait for CPU utilization threshold
+WaitForCpuUtilizationThreshold() {
+  echo "Waiting for CPU utilization to reach the specified threshold (PID = $1, CPU = $2%)."
+  while : ; do
+    local CPU_UTILIZATION=$(GetCpuUtilization $1)
+    if [ "$CPU_UTILIZATION" == "" ]; then
+      return -1;
+    fi
+    if (( $(echo "$CPU_UTILIZATION >= $2" | bc -l) )); then
+      echo "CPU utilization threshold reached (PID = $1, CPU = $CPU_UTILIZATION%)."
+      return 0;
+    fi
+    echo "Current CPU utilization (PID = $1, CPU = $CPU_UTILIZATION%)."
+    sleep $FLAG_INTERVAL
+  done
+}
+
 # Get parameters
 FLAG_OUTPUT_FILE="./CoreDump_Full.%p"
 FLAG_SYMBOLS_FOLDER=~/Symbols
 FLAG_MEMORY_THRESHOLD_TYPE="Used"
 FLAG_INTERVAL=5
-PARSED_ARGUMENTS=$(getopt -q --alternative --options n:,o:,s,f:,c,m: --longoptions name:,output:,symbols,folder:,gc,memory:,memoryType:,interval: -- "$@")
+PARSED_ARGUMENTS=$(getopt -q --alternative --options n:,o:,s,f:,g,m:,c: --longoptions name:,output:,symbols,folder:,gc,memory:,memoryType:,cpu:,interval: -- "$@")
 eval set -- "$PARSED_ARGUMENTS"
 while : ; do
   case "$1" in
@@ -101,9 +123,10 @@ while : ; do
     -o | --output) FLAG_OUTPUT_FILE="$2"; shift 2 ;;
     -s | --symbols) FLAG_SYMBOLS_DOWNLOAD="TRUE"; shift ;;
     -f | --folder) FLAG_SYMBOLS_FOLDER="$2"; shift 2 ;;
-    -c | --gc) FLAG_TRIGGER_GC="TRUE"; shift ;;
+    -g | --gc) FLAG_TRIGGER_GC="TRUE"; shift ;;
     -m | --memory) FLAG_MEMORY_THRESHOLD="$2"; shift 2 ;;
     --memoryType) FLAG_MEMORY_THRESHOLD_TYPE="$2"; shift 2 ;;
+    -c | --cpu) FLAG_CPU_THRESHOLD="$2"; shift 2 ;;
     --interval) FLAG_INTERVAL="$2"; shift 2 ;;
     --) shift; break ;;
   esac
@@ -113,8 +136,13 @@ done
 [ -z $FLAG_TARGET_NAME ] && DisplayErrorAndStop "Target process name (-n|--name) is not specified."
 TARGET_PID=$(GetTargetProcessId $FLAG_TARGET_NAME)
 [ -z $TARGET_PID ] && DisplayErrorAndStop "Target .NET Core process name '$FLAG_TARGET_NAME' is not found."
+[ ! -z $FLAG_MEMORY_THRESHOLD ] && [ ! -z $FLAG_CPU_THRESHOLD ] && DisplayErrorAndStop "Using both memory allocation and CPU utilization thresholds is not supported."
 if [ ! -z $FLAG_MEMORY_THRESHOLD ]; then
   WaitForMemoryAllocationThreshold $TARGET_PID $FLAG_MEMORY_THRESHOLD $FLAG_MEMORY_THRESHOLD_TYPE
+  [ $? != 0 ] && DisplayErrorAndStop "Process terminated (PID = $TARGET_PID)."
+fi
+if [ ! -z $FLAG_CPU_THRESHOLD ]; then
+  WaitForCpuUtilizationThreshold $TARGET_PID $FLAG_CPU_THRESHOLD
   [ $? != 0 ] && DisplayErrorAndStop "Process terminated (PID = $TARGET_PID)."
 fi
 [ ! -z $FLAG_TRIGGER_GC ] && TriggerGCCollect $TARGET_PID

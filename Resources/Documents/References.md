@@ -123,7 +123,7 @@
 
 ## Documentation
 
-* [.NET Internals](https://github.com/dotnet/runtime/tree/main/docs/design/coreclr/botr)
+* [The Book of the Runtime](https://github.com/dotnet/runtime/tree/main/docs/design/coreclr/botr)
 * [.NET GC Internals](https://github.com/Maoni0/mem-doc/blob/master/doc/.NETMemoryPerformanceAnalysis.md)
 * [.NET Runtime Documentation](https://github.com/dotnet/runtime/tree/main/docs)
 * [DllGetClassObject Function](https://learn.microsoft.com/windows/win32/api/combaseapi/nf-combaseapi-dllgetclassobject)
