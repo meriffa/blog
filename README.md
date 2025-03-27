@@ -36,6 +36,7 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [ThreadLocal<T> (TBD)](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(ThreadLocal).md)
   * [AsyncLocal<T> (TBD)](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(AsyncLocal).md)
   * [Tiered Compilation](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(Tiered%20Compilation).md)
+  * [Method Dispatch](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(Method%20Dispatch).md)
 
 * .NET Core Troubleshooting
 
