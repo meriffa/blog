@@ -169,3 +169,4 @@
 * [Code Compiler & Decompiler](https://sharplab.io)
 * [Custom Profiler](https://learn.microsoft.com/dotnet/framework/unmanaged-api/profiling/)
 * [Custom Debugger](https://learn.microsoft.com/dotnet/framework/unmanaged-api/debugging/)
+* [NASM](https://nasm.us)

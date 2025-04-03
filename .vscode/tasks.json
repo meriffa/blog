@@ -78,6 +78,46 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "ByteZoo.Blog.Asm Build (Debug)",
+            "command": "./Resources/Scripts/NASM.sh",
+            "type": "process",
+            "args": [
+                "Compile"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            }
+        },
+        {
+            "label": "ByteZoo.Blog.Asm Build (Release)",
+            "command": "./Resources/Scripts/NASM.sh",
+            "type": "process",
+            "args": [
+                "Compile",
+                "--release"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            }
+        },
+        {
+            "label": "ByteZoo.Blog.Asm Clean",
+            "command": "./Resources/Scripts/NASM.sh",
+            "type": "process",
+            "args": [
+                "Clean"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent",
+                "clear": true
+            }
+        },
+        {
             "label": "ByteZoo.Blog.Profiler Publish",
             "command": "dotnet",
             "type": "process",
