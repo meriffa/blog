@@ -13,47 +13,64 @@ DisplayErrorAndStop() {
 # Install NASM
 InstallNASM() {
   sudo apt-get install nasm -y -qq
-  [ $? != 0 ] && DisplayErrorAndStop "NASM install failed.";
-  nasm -v | grep -i "NASM version " &> /dev/null;
-  [ $? != 0 ] && DisplayErrorAndStop "NASM verification failed.";
-  echo "NASM installed.";
+  [ $? != 0 ] && DisplayErrorAndStop "NASM install failed."
+  nasm -v | grep -i "NASM version " &> /dev/null
+  [ $? != 0 ] && DisplayErrorAndStop "NASM verification failed."
+  echo "NASM installed."
 }
 
 # Compile assembly sources
 CompileSources() {
   pushd $SOLUTION_FOLDER/Sources/ByteZoo.Blog.Asm 1> /dev/null
-  [ $? != 0 ] && DisplayErrorAndStop "Assembly source code folder not found.";
+  [ $? != 0 ] && DisplayErrorAndStop "Assembly source code folder not found."
   if [ ! -d ./bin ]; then
     mkdir ./bin
-    [ $? != 0 ] && DisplayErrorAndStop "Assembly output folder creation failed.";
+    [ $? != 0 ] && DisplayErrorAndStop "Assembly output folder creation failed."
   fi
   CompileSourceFolder .
   popd 1> /dev/null
 }
 
+# Return source output type
+GetSourceOutputType() {
+  case $1 in
+    "ByteZoo.Blog.Asm.Application") echo "Application" ;;
+    "ByteZoo.Blog.Asm.Library") echo "Library" ;;
+    *) echo "Unknown" ;;
+  esac
+}
+
 # Compile assembly source folder
 CompileSourceFolder() {
   shopt -s nullglob dotglob
-  for PathName in "$1"/*; do
-    if [ -d "$PathName" ]; then
-      CompileSourceFolder "$PathName"
+  for PATH_NAME in "$1"/*; do
+    if [ -d "$PATH_NAME" ]; then
+      CompileSourceFolder "$PATH_NAME"
     else
-      case "$PathName" in *.asm|*.S)
-        local FileName=$(basename "$PathName")
-        local Name="${FileName%.*}"
-        nasm -f elf64 "$PathName" -i "./inc" -o "./bin/$Name.o"
-        [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PathName' compile failed.";
-        ld -o "./bin/$Name" "./bin/$Name.o"
-        [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PathName' link failed.";
-        rm "./bin/$Name.o"
-        [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PathName' cleanup failed.";
+      case "$PATH_NAME" in *.asm|*.S)
+        local FILE_NAME_AND_EXTENSION=$(basename "$PATH_NAME")
+        local NAME_ONLY="${FILE_NAME_AND_EXTENSION%.*}"
+        nasm -f elf64 "$PATH_NAME" -i "./inc" -o "./bin/$NAME_ONLY.o"
+        [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' compile failed."
+        local OUTPUT_TYPE=$(GetSourceOutputType $NAME_ONLY)
+        case $OUTPUT_TYPE in
+          "Application")
+            local OUTPUT_FILE_NAME="./bin/$NAME_ONLY"
+            ld -o $OUTPUT_FILE_NAME "./bin/$NAME_ONLY.o"
+            [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' link failed." ;;
+          "Library")
+            local OUTPUT_FILE_NAME="./bin/$NAME_ONLY.so"
+            ld -shared -o $OUTPUT_FILE_NAME "./bin/$NAME_ONLY.o"
+            [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' link failed." ;;
+          *) DisplayErrorAndStop "Unknown assembly '$PATH_NAME' output type." ;;
+        esac
+        rm "./bin/$NAME_ONLY.o"
+        [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' cleanup failed."
         if [ "$COMPILE_RELEASE" == "1" ]; then
-          strip -s "./bin/$Name"
-          [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PathName' strip failed.";
+          strip -s $OUTPUT_FILE_NAME
+          [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' strip failed."
         fi
-        local FullName=$(realpath "./bin/$Name")
-        local FileSize=$(wc -c < "./bin/$Name")
-        echo "'$FullName' compiled (Size = $FileSize)."
+        echo "'$(realpath $OUTPUT_FILE_NAME)' compiled (Type = $OUTPUT_TYPE, Size = $(wc -c < $OUTPUT_FILE_NAME))."
       esac
     fi
   done
@@ -62,25 +79,30 @@ CompileSourceFolder() {
 # Clean assembly output
 CleanSources() {
   pushd $SOLUTION_FOLDER/Sources/ByteZoo.Blog.Asm 1> /dev/null
-  [ $? != 0 ] && DisplayErrorAndStop "Assembly source code folder not found.";
+  [ $? != 0 ] && DisplayErrorAndStop "Assembly source code folder not found."
   if [ -d ./bin ]; then
     rm -rf ./bin
-    [ $? != 0 ] && DisplayErrorAndStop "Assembly output folder cleanup failed.";
+    [ $? != 0 ] && DisplayErrorAndStop "Assembly output folder cleanup failed."
   fi
   popd 1> /dev/null
-  echo "Assembly output folder cleared.";
+  echo "Assembly output folder cleared."
 }
 
 # Display application details
 DisplayApplicationDetails() {
   pushd $SOLUTION_FOLDER/Sources/ByteZoo.Blog.Asm/bin 1> /dev/null
-  [ $? != 0 ] && DisplayErrorAndStop "Assembly output code folder not found.";
+  [ $? != 0 ] && DisplayErrorAndStop "Assembly output code folder not found."
   shopt -s nullglob dotglob
-  for PathName in ./*; do
+  for PATH_NAME in ./*; do
+    echo "--- Export Symbols ---"
+    objdump -T "$PATH_NAME"
+    nm -D "$PATH_NAME"
     echo "--- Headers & Symbols ---"
-    objdump -x "$PathName"
+    objdump -x "$PATH_NAME"
     echo "--- Section Headers ---"
-    readelf -S "$PathName"
+    readelf -S "$PATH_NAME"
+    echo "--- Debug Symbols ---"
+    nm --debug-syms "$PATH_NAME"
     echo "---"
   done
   popd 1> /dev/null
@@ -94,7 +116,7 @@ DebugCommands() {
   gcc ABI.c -g -o ABI -O3
   # LLDB
   target create ABI                                                                             # Create Target
-  target create ByteZoo.Blog.Asm                                                                # Create Target
+  target create ByteZoo.Blog.Asm.Application                                                    # Create Target
   breakpoint set --basename call_target                                                         # Set Breakpoint
   breakpoint set --file ABI.c --line 18                                                         # Set Breakpoint
   breakpoint set --basename _start                                                              # Set Breakpoint
@@ -106,21 +128,19 @@ DebugCommands() {
   disassemble -b                                                                                # Display Assembly
   f                                                                                             # Display C Source
   image dump symtab ABI                                                                         # Display Symbols
-  # Shell
-  nm --debug-syms ABI                                                                           # Display Symbols
 }
 
 # Get specified operation
 if [ -z $1 ]; then
-  DisplayErrorAndStop "No operation specified.";
+  DisplayErrorAndStop "No operation specified."
 elif [ -n $1 ]; then
-  OPERATION=$( tr '[:upper:]' '[:lower:]' <<<"$1" );
+  OPERATION=$( tr '[:upper:]' '[:lower:]' <<<"$1" )
 fi
 
 # Get operation parameters
-shift;
-PARSED_ARGUMENTS=$(getopt -q --alternative --options r --longoptions release -- "$@");
-eval set -- "$PARSED_ARGUMENTS";
+shift
+PARSED_ARGUMENTS=$(getopt -q --alternative --options r --longoptions release -- "$@")
+eval set -- "$PARSED_ARGUMENTS"
 while : ; do
   case "$1" in
     -r | --release) COMPILE_RELEASE="1"; shift 1 ;;

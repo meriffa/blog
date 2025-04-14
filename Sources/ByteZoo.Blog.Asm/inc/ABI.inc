@@ -3,14 +3,13 @@
 ; -----------------------------------------------------------------------------------------------
 ;
 ; - Parameters:
-;                       Parameter 1             RDI
-;                       Parameter 2             RSI
-;                       Parameter 3             RDX
-;                       Parameter 4             RCX
-;                       Parameter 5             R8
-;                       Parameter 6             R9
-;                       Parameter 7             [RBP + 16]
-;                       Parameter N             [RBP + 8 * N + 16]
+;                       Integral Parameter 1    RDI
+;                       Integral Parameter 2    RSI
+;                       Integral Parameter 3    RDX
+;                       Integral Parameter 4    RCX
+;                       Integral Parameter 5    R8
+;                       Integral Parameter 6    R9
+;                       Integral Parameter N    [RBP + 8 * (N - 7) + 16]
 ;                       Float Parameter 1       XMM0
 ;                       Float Parameter 2       XMM1
 ;                       Float Parameter 3       XMM2
@@ -19,14 +18,13 @@
 ;                       Float Parameter 6       XMM5
 ;                       Float Parameter 7       XMM6
 ;                       Float Parameter 8       XMM7
+;                       Float Parameter N       [RBP + 8 * (N - 9) + 16]
 ;
 ; - Return Values:
-;                       Return Value 1          RAX
-;                       Return Value 2          RDX
-;                       Return Value 1          XMM0                                            ; Float
-;                       Return Value 2          XMM1                                            ; Float
-;                       Return Value 1          ST0                                             ; Long Double
-;                       Return Value 2          ST1                                             ; Long Double
+;                       Integral Return Value   RAX                                             ; 8 bit (byte), 16 bit (short), 32 bit (int), 64 bit (long)
+;                       Integral Return Value   RDX:RAX                                         ; 128 bit
+;                       Float Return Value      XMM0                                            ; 32 bit (single), 64 bit (double), 128 bit
+;                       Float Return Value      XMM1:XMM0                                       ; 256 bit
 ;
 ; - Temporary Registers:
 ;                       Integral                RAX, RCX, RDX, RSI, RDI, R8 ... R11
