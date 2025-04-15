@@ -102,4 +102,4 @@ source ~/.bashrc
 
 * [Article Script](/Resources/Scripts/Install%20.NET%20Core%20On%20Linux.sh)
 
-<!--- Category = Advanced .NET, Tags = .NET Core, Linux, Installation --->
+<!--- Category: .NET Prerequisites, Tags: .NET, .NET Core, Install, Linux --->

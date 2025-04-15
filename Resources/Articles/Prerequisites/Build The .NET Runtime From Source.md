@@ -239,4 +239,4 @@ You can browse the managed .NET APIs using the following online tools:
 * [Article Source Code](/Sources)
 * [Article Script](/Resources/Scripts/Build%20The%20.NET%20Runtime%20From%20Source.sh)
 
-<!--- Category = Advanced .NET, Tags = .NET Core, Linux, Source Code --->
+<!--- Category: .NET Prerequisites, Tags: .NET, .NET Core, Source Code, Linux --->

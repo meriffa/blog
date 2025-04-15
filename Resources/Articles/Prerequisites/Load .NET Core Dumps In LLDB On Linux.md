@@ -109,4 +109,4 @@ The source files can be placed either in the same folder as the core dump file o
 * [dotnet-sos](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-sos)
 * [dotnet-symbol](https://learn.microsoft.com/dotnet/core/diagnostics/dotnet-symbol)
 
-<!--- Category = Advanced .NET, Tags = .NET Core, Core Dump, Memory Dump, Linux --->
+<!--- Category: .NET Prerequisites, Tags: .NET, .NET Core, Core Dump, LLDB, Linux --->

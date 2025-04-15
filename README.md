@@ -12,6 +12,7 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [Load .NET Core Dumps In LLDB On Linux](/Resources/Articles/Prerequisites/Load%20.NET%20Core%20Dumps%20In%20LLDB%20On%20Linux.md)
   * [Build The .NET Runtime From Source](/Resources/Articles/Prerequisites/Build%20The%20.NET%20Runtime%20From%20Source.md)
   * [SOS Extension Commands (TBD)](/Resources/Articles/Prerequisites/SOS%20Extension%20Commands.md)
+  * [Analyze .NET Core Dumps On Linux (Capture, Transfer)](/Resources/Articles/Prerequisites/Analyze%20.NET%20Core%20Dumps%20On%20Linux%20(Capture,%20Transfer).md)
 
 * .NET Core Concepts
 

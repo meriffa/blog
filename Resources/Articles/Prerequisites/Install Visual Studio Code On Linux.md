@@ -62,4 +62,4 @@ done
 
 * [Article Script](/Resources/Scripts/Install%20Visual%20Studio%20Code%20On%20Linux.sh)
 
-<!--- Category = Advanced .NET, Tags = Visual Studio Code, Linux, Installation --->
+<!--- Category: .NET Prerequisites, Tags: .NET, .NET Core, Visual Studio Code, Linux --->

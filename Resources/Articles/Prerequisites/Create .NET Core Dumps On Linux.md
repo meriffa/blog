@@ -441,4 +441,4 @@ Output directory:                       /home/marian
 * [Collect Dumps On Crash](https://learn.microsoft.com/dotnet/core/diagnostics/collect-dumps-crash)
 * [ProcDump](https://github.com/microsoft/ProcDump-for-Linux)
 
-<!--- Category = Advanced .NET, Tags = .NET Core, Core Dump, Memory Dump, Linux --->
+<!--- Category: .NET Prerequisites, Tags: .NET, .NET Core, Core Dump, Linux --->
