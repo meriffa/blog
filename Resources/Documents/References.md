@@ -95,6 +95,8 @@
 * clru                                                    Displays an annotated disassembly of a managed method.
 * disassemble, di                                         Disassemble specified instructions in the current target.
 * expression, expr                                        Evaluate an expression on the current thread. Displays any returned value with LLDB's default formatting.
+* log list                                                List the log categories for one or more log channels.
+* log enable -v lldb dyld module symbol                   Enable logging for shared library & module activities and symbol related issues and warnings.
 * memory read                                             Read from the memory of the current target process.
 * platform shell clear, shell clear                       Clear screen
 * process continue, continue                              Continue execution of all threads in the current process.

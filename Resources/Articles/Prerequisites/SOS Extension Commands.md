@@ -51,9 +51,9 @@ logging enable
 setsymbolserver -ms
 loadsymbols
 setsymbolserver -directory <SymbolsFolder>
-setclrpath
+setclrpath                                                                                      # DAC Runtime (Target Application / Core Dump)
 setclrpath <TargetProcessRuntimeFolder|CoreDumpRuntimeFolder>
-sethostruntime
+sethostruntime                                                                                  # Managed SOS Code Runtime
 sethostruntime -clear
 sethostruntime -major <Number> <DebuggerHostRuntimeFolder>
 ```
