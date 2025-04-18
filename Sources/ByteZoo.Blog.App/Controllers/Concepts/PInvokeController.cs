@@ -1,5 +1,6 @@
 using ByteZoo.Blog.Common.InteropServices;
 using CommandLine;
+using Microsoft.Win32.SafeHandles;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -204,6 +205,55 @@ public partial class PInvokeController : Controller
     }
     #endregion
 
+    #region Memory Region
+    /// <summary>
+    /// Memory region
+    /// </summary>
+    private class MemoryRegion : SafeHandleMinusOneIsInvalid
+    {
+
+        #region Properties
+        /// <summary>
+        /// Memory region buffer
+        /// </summary>
+        public int[] Buffer { get; init; }
+
+        /// <summary>
+        /// Memory region handle
+        /// </summary>
+        public GCHandle Handle { get; init; }
+
+        /// <summary>
+        /// Memory region pointer
+        /// </summary>
+        public nint Pointer { get; init; }
+        #endregion
+
+        #region Initialization
+        /// <summary>
+        /// Initialization
+        /// </summary>
+        /// <param name="size"></param>
+        public MemoryRegion(int size) : base(true)
+        {
+            Buffer = new int[size];
+            Handle = GCHandle.Alloc(Buffer, GCHandleType.Pinned);
+            Pointer = Handle.AddrOfPinnedObject();
+        }
+        #endregion
+
+        #region Protected Methods
+        /// <inheritdoc/>
+        protected override bool ReleaseHandle()
+        {
+            Handle.Free();
+            return true;
+        }
+        #endregion
+
+    }
+    #endregion
+
     #region Protected Methods
     /// <summary>
     /// Execute controller
@@ -214,52 +264,31 @@ public partial class PInvokeController : Controller
         var size = 256;
         byte fillValue = 0x03;
         nuint byteCount = (nuint)size * sizeof(int);
-        var (buffer1, handle1, pointer1) = AllocateRegion(size);
-        var (buffer2, handle2, pointer2) = AllocateRegion(size);
-        try
-        {
-            displayService.WriteInformation($"Memory regions allocated (Buffer 1 = {buffer1.Sum()}, Buffer 2 = {buffer2.Sum()}).");
-            FillRegion(pointer1, byteCount, fillValue);
-            FillRegion(pointer2, byteCount, fillValue);
-            displayService.WriteInformation($"Memory regions filled (Buffer 1 = {GetSum(buffer1)}, Buffer 2 = {GetSum(buffer2)}).");
-            var match = CompareRegions(pointer1, pointer2, (nuint)size) == 0;
-            displayService.WriteInformation($"Memory regions compared (Match = {match}).");
-            displayService.WriteInformation($"_Function1(): Result = {AssemblyFunction1(true, 2, 3, '\u0004', 5, 6, 7, 8, 9, 10)}");
-            displayService.WriteInformation($"_Function2(): Result = {AssemblyFunction2(1.01f, 2.02d, 3.03f, 4.04d, 5.05f, 6.06d, 7.07f, 8.08d, 9.09f, 10.10d)}");
-            var result3 = AssemblyFunction3(pointer1, 3.03f, 4.04d, byteCount);
-            displayService.WriteInformation($"_Function3(): Result = [{result3.Field1}, {result3.Field2:X16}]");
-            var p3 = new Structure1 { Field1 = 0x55555555, Field2 = 0x66666666 };
-            var p5 = 7.89m;
-            var p7 = new int[] { 1, 2, 3, 4, 5, 6, 7 };
-            var result4 = AssemblyFunction4(new Structure1 { Field1 = 0x11111111, Field2 = 0x22222222 }, new Structure2 { Field1 = 0x33, Field2 = 0x44444444 }, ref p3, out var p4, ref p5, "Input text.", p7, p7.Length);
-            displayService.WriteInformation($"_Function4(): Result = [{result4.Field1:X16}, {result4.Field2:X16}, {result4.Field3:X16}], P3 = [{p3.Field1:X8}, {p3.Field2:X8}], P4 = [{p4.Field1:X8}, {p4.Field2:X8}]");
-            ZeroRegion(pointer1, byteCount);
-            ZeroRegion(pointer2, byteCount);
-            displayService.WriteInformation($"Memory regions cleared (Buffer 1 = {buffer1.Sum()}, Buffer 2 = {buffer2.Sum()}).");
-            displayService.Wait();
-        }
-        finally
-        {
-            handle1.Free();
-            handle2.Free();
-        }
+        using var region1 = new MemoryRegion(size);
+        using var region2 = new MemoryRegion(size);
+        displayService.WriteInformation($"Memory regions allocated (Buffer 1 = {region1.Buffer.Sum()}, Buffer 2 = {region2.Buffer.Sum()}).");
+        FillRegion(region1.Pointer, byteCount, fillValue);
+        FillRegion(region2.Pointer, byteCount, fillValue);
+        displayService.WriteInformation($"Memory regions filled (Buffer 1 = {GetSum(region1.Buffer)}, Buffer 2 = {GetSum(region2.Buffer)}).");
+        var match = CompareRegions(region1.Pointer, region2.Pointer, (nuint)size) == 0;
+        displayService.WriteInformation($"Memory regions compared (Match = {match}).");
+        displayService.WriteInformation($"_Function1(): Result = {AssemblyFunction1(true, 2, 3, '\u0004', 5, 6, 7, 8, 9, 10)}");
+        displayService.WriteInformation($"_Function2(): Result = {AssemblyFunction2(1.01f, 2.02d, 3.03f, 4.04d, 5.05f, 6.06d, 7.07f, 8.08d, 9.09f, 10.10d)}");
+        var result3 = AssemblyFunction3(region1.Pointer, 3.03f, 4.04d, byteCount);
+        displayService.WriteInformation($"_Function3(): Result = [{result3.Field1}, {result3.Field2:X16}]");
+        var p3 = new Structure1 { Field1 = 0x55555555, Field2 = 0x66666666 };
+        var p5 = 7.89m;
+        var p7 = new int[] { 1, 2, 3, 4, 5, 6, 7 };
+        var result4 = AssemblyFunction4(new Structure1 { Field1 = 0x11111111, Field2 = 0x22222222 }, new Structure2 { Field1 = 0x33, Field2 = 0x44444444 }, ref p3, out var p4, ref p5, "Input text.", p7, p7.Length);
+        displayService.WriteInformation($"_Function4(): Result = [{result4.Field1:X16}, {result4.Field2:X16}, {result4.Field3:X16}], P3 = [{p3.Field1:X8}, {p3.Field2:X8}], P4 = [{p4.Field1:X8}, {p4.Field2:X8}]");
+        ZeroRegion(region1.Pointer, byteCount);
+        ZeroRegion(region2.Pointer, byteCount);
+        displayService.WriteInformation($"Memory regions cleared (Buffer 1 = {region1.Buffer.Sum()}, Buffer 2 = {region2.Buffer.Sum()}).");
+        displayService.Wait();
     }
     #endregion
 
     #region Private Methods
-    /// <summary>
-    /// Allocate memory region
-    /// </summary>
-    /// <param name="size"></param>
-    /// <returns></returns>
-    private static (int[] buffer, GCHandle handle, IntPtr pointer) AllocateRegion(int size)
-    {
-        int[] buffer = new int[size];
-        var handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-        var pointer = handle.AddrOfPinnedObject();
-        return (buffer, handle, pointer);
-    }
-
     /// <summary>
     /// Fill memory region with specified fill value
     /// </summary>
