@@ -110,24 +110,16 @@ DisplayApplicationDetails() {
 
 # Debug commands
 DebugCommands() {
-  # Compile
-  gcc ABI.c -g -o ABI
-  gcc ABI.c -g -o ABI -mno-red-zone
-  gcc ABI.c -g -o ABI -O3
-  # LLDB
-  target create ABI                                                                             # Create Target
   target create ByteZoo.Blog.Asm.Application                                                    # Create Target
   breakpoint set --basename call_target                                                         # Set Breakpoint
-  breakpoint set --file ABI.c --line 18                                                         # Set Breakpoint
   breakpoint set --basename _start                                                              # Set Breakpoint
   breakpoint set -a [Address]                                                                   # Set Breakpoint
   process launch --stop-at-entry                                                                # Create Process
   c                                                                                             # Resume Execution
   ni                                                                                            # Instruction single step (over calls)
   si                                                                                            # Instruction single step (into calls)
-  disassemble -b                                                                                # Display Assembly
-  f                                                                                             # Display C Source
-  image dump symtab ABI                                                                         # Display Symbols
+  disassemble -b                                                                                # Display assembly
+  f                                                                                             # Display source
 }
 
 # Get specified operation

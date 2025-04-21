@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+// Call target method
 int call_target(int a, int b, int c, int d, int e, int f, int g, int h, int i)
 {
     int result = 0x00000000;
@@ -15,8 +16,10 @@ int call_target(int a, int b, int c, int d, int e, int f, int g, int h, int i)
     return result;
 }
 
+// Application entry
 int main(int argc, char *argv[])
 {
     int r = call_target(0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9);
+    printf("ABI\n");
     return r;
 }

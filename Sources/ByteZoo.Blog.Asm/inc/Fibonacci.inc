@@ -1,8 +1,9 @@
 ; -----------------------------------------------------------------------------------------------
-; Fibonacci Display
+; Fibonacci Functions
 ; -----------------------------------------------------------------------------------------------
 
-_Fibonacci_Display:     push                    rbp
+; Display Fibonacci sequence
+Fibonacci_Display:      push                    rbp                                             ; void Fibonacci_Display(int element_count)
                         mov                     rbp, rsp
                         sub                     rsp, 16
                         mov                     dword [rbp - 4], 0                              ; Current number
@@ -10,7 +11,7 @@ _Fibonacci_Display:     push                    rbp
                         mov                     [rbp - 12], edi                                 ; Sequence element count
 ._loop:                 mov                     edi, [rbp - 4]
                         lea                     rsi, [string_buffer]
-                        call                    _String_FromUInteger
+                        call                    String_FromUInteger
                         mov                     rsi, rax
                         Console_WriteLine
                         Console_WriteLine       new_line, 1

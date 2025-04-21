@@ -2,22 +2,22 @@
 ; String Functions
 ; -----------------------------------------------------------------------------------------------
 
-; Return string length [int _String_GetLength(const char *str)]
-_String_GetLength:      push                    rbp
+; Return null-terminated string length
+String_GetLength_SZ:    push                    rbp                                             ; int String_GetLength_SZ(const char *str)
                         mov                     rbp, rsp
                         xor                     rax, rax
                         xor                     ecx, ecx
-._loop:                 cmp                     [rdi], al
+._loop:                 cmp                     al, [rdi]
                         je                      ._found
-                        inc                     ecx
-                        inc                     rdi
+                        add                     ecx, 1
+                        add                     rdi, 1
                         jmp                     ._loop
 ._found:                mov                     eax, ecx
                         pop                     rbp
                         ret
 
-; Convert string to lower case in-place [void _String_ToLowerInPlace(char *str)]
-_String_ToLowerInPlace: push                    rbp
+; Convert null-terminated string to lower case (in-place)
+String_ToLower_SZ:      push                    rbp                                             ; void String_ToLower_SZ(char *str)
                         mov                     rbp, rsp
 ._loop:                 mov                     al, [rdi]
                         test                    al, al
@@ -28,13 +28,13 @@ _String_ToLowerInPlace: push                    rbp
                         ja                      ._skip
                         add                     al, 32
                         mov                     [rdi], al
-._skip:                 inc                     rdi
+._skip:                 add                     rdi, 1
                         jmp                     ._loop
 ._complete:             pop                     rbp
                         ret
 
-; Convert string to upper case in-place [void _String_ToUpperInPlace(char *str)]
-_String_ToUpperInPlace: push                    rbp
+; Convert null-terminated string to upper case (in-place)
+String_ToUpper_SZ:      push                    rbp                                             ; void String_ToUpper_SZ(char *str)
                         mov                     rbp, rsp
 ._loop:                 mov                     al, [rdi]
                         test                    al, al
@@ -45,13 +45,13 @@ _String_ToUpperInPlace: push                    rbp
                         ja                      ._skip
                         sub                     al, 32
                         mov                     [rdi], al
-._skip:                 inc                     rdi
+._skip:                 add                     rdi, 1
                         jmp                     ._loop
 ._complete:             pop                     rbp
                         ret
 
-; Convert unsigned integer to string [(char *str, size_t count) _String_FromUInteger(int value, char *str)]
-_String_FromUInteger:   push                    rbp
+; Convert unsigned integer to string
+String_FromUInteger:    push                    rbp                                             ; (char *buffer, size_t count) String_FromUInteger(unsigned int value, char *buffer)
                         mov                     rbp, rsp
                         add                     rsi, 12
                         xor                     r8, r8
@@ -61,18 +61,18 @@ _String_FromUInteger:   push                    rbp
                         div                     ecx
                         add                     dl, '0'
                         mov                     [rsi], dl
-                        dec                     rsi
-                        inc                     r8
+                        sub                     rsi, 1
+                        add                     r8, 1
                         test                    eax, eax
                         jne                     ._loop
-                        inc                     rsi
+                        add                     rsi, 1
                         mov                     rax, rsi
                         mov                     rdx, r8
                         pop                     rbp
                         ret
 
-; Convert signed integer to string [(char *str, size_t count) _String_FromSInteger(int value, char *str)]
-_String_FromSInteger:   push                    rbp
+; Convert integer to string
+String_FromInteger:     push                    rbp                                             ; (char *buffer, size_t count) String_FromInteger(int value, char *buffer)
                         mov                     rbp, rsp
                         add                     rsi, 12
                         xor                     r8, r8
@@ -82,21 +82,21 @@ _String_FromSInteger:   push                    rbp
                         test                    eax, eax
                         jns                     ._loop
                         neg                     eax
-                        inc                     r9
+                        add                     r9, 1
 ._loop:                 xor                     edx, edx
                         div                     ecx
                         add                     dl, '0'
                         mov                     [rsi], dl
-                        dec                     rsi
-                        inc                     r8
+                        sub                     rsi, 1
+                        add                     r8, 1
                         test                    eax, eax
                         jne                     ._loop
                         test                    r9, r9
                         jz                      ._skip_sign
                         mov                     byte [rsi], '-'
-                        dec                     rsi
-                        inc                     r8
-._skip_sign:            inc                     rsi
+                        sub                     rsi, 1
+                        add                     r8, 1
+._skip_sign:            add                     rsi, 1
                         mov                     rax, rsi
                         mov                     rdx, r8
                         pop                     rbp

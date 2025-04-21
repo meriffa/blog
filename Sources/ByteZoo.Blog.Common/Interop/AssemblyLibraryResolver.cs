@@ -1,7 +1,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace ByteZoo.Blog.Common.InteropServices;
+namespace ByteZoo.Blog.Common.Interop;
 
 /// <summary>
 /// Assembly library resolver

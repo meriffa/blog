@@ -18,25 +18,17 @@
 _start:                 Console_WriteLine       title_separator, title_separator_length         ; Display application title
                         Console_WriteLine_SZ    application_title
                         Console_WriteLine       title_separator, title_separator_length
-
                         Console_WriteLine       new_line, 1
-
-                        mov                     rdi, [rsp]                                      ; Display command-line arguments
-                        mov                     rsi, rsp
-                        add                     rsi, 8
-                        call                    _CommandLine_Print
-
+                        mov                     edi, [rsp]                                      ; Display command-line arguments
+                        lea                     rsi, [rsp + 8]
+                        call                    CommandLine_Print
                         Console_WriteLine       new_line, 1
-
-                        mov                     edi, 13                                         ; Display Fibonacci sequence
-                        call                    _Fibonacci_Display
-
+                        mov                     edi, 11                                         ; Display Fibonacci sequence
+                        call                    Fibonacci_Display
                         Console_WriteLine       new_line, 1
-
-                        mov                     rdi, 7                                          ; Display tree
+                        mov                     edi, 5                                          ; Display tree
                         lea                     rsi, [tree_display_buffer]
-                        call                    _Tree_Display
-
+                        call                    Tree_Display
                         System_Exit                                                             ; Exit application
 
                         section                 .data

@@ -1,5 +1,5 @@
 using BenchmarkDotNet.Attributes;
-using ByteZoo.Blog.Common.Models.Memory;
+using ByteZoo.Blog.Common.Interop;
 using CommandLine;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -120,8 +120,8 @@ public class MemoryAllocationController : Controller
     public unsafe void AllocateNativeHeapPointer()
     {
         int size = Size * Unsafe.SizeOf<int>();
-        using NativeHeapRegion buffer = new(size);
-        void* destination = buffer.Start.ToPointer();
+        using NativeHeapMemoryRegion buffer = new(size);
+        void* destination = buffer.Pointer.ToPointer();
         FillRegion(destination, (nuint)size, fillValue);
         ClearRegion(destination, (nuint)size);
     }
@@ -133,8 +133,8 @@ public class MemoryAllocationController : Controller
     public unsafe void AllocateNativeHeapSpan()
     {
         int size = Size * Unsafe.SizeOf<int>();
-        using NativeHeapRegion buffer = new(size);
-        ReadOnlySpan<int> span = new(buffer.Start.ToPointer(), Size);
+        using NativeHeapMemoryRegion buffer = new(size);
+        ReadOnlySpan<int> span = new(buffer.Pointer.ToPointer(), Size);
         void* destination = Unsafe.AsPointer(ref MemoryMarshal.GetReference(span));
         FillRegion(destination, (nuint)size, fillValue);
         ClearRegion(destination, (nuint)size);
