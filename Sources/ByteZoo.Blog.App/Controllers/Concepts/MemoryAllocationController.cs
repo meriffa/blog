@@ -27,6 +27,8 @@ public class MemoryAllocationController : Controller
         displayService.WriteInformation($"Memory region allocated (Size = {Size}, Type = Managed Stack (Span)).");
         AllocateManagedHeapArray();
         displayService.WriteInformation($"Memory region allocated (Size = {Size}, Type = Managed Heap (Array)).");
+        AllocateManagedHeapArrayPinned();
+        displayService.WriteInformation($"Memory region allocated (Size = {Size}, Type = Managed Heap (Pinned Array)).");
         AllocateManagedHeapSpan();
         displayService.WriteInformation($"Memory region allocated (Size = {Size}, Type = Managed Heap (Span)).");
         AllocateNativeHeapPointer();
@@ -44,7 +46,7 @@ public class MemoryAllocationController : Controller
     private byte fillValue;
 
     /// <summary>
-    /// Region size.
+    /// Region size
     /// </summary>
     [Params(100, 1_000)]
     public int Size { get; set; }
@@ -56,7 +58,7 @@ public class MemoryAllocationController : Controller
     public void Setup() => fillValue = (byte)Random.Shared.Next(0, 255);
 
     /// <summary>
-    /// Allocates managed stack region and use pointer.
+    /// Allocates managed stack region and use pointer
     /// </summary>
     [Benchmark(Description = "Managed Stack (Pointer)")]
     public unsafe void AllocateManagedStackPointer()
@@ -69,7 +71,7 @@ public class MemoryAllocationController : Controller
     }
 
     /// <summary>
-    /// Allocates managed stack region and use span.
+    /// Allocates managed stack region and use span
     /// </summary>
     [Benchmark(Baseline = true, Description = "Managed Stack (Span)")]
     public unsafe void AllocateManagedStackSpan()
@@ -82,7 +84,7 @@ public class MemoryAllocationController : Controller
     }
 
     /// <summary>
-    /// Allocates managed heap region and use array.
+    /// Allocates managed heap region and use array
     /// </summary>
     [Benchmark(Description = "Managed Heap (Array)")]
     public unsafe void AllocateManagedHeapArray()
@@ -98,7 +100,20 @@ public class MemoryAllocationController : Controller
     }
 
     /// <summary>
-    /// Allocates managed heap region and use span.
+    /// Allocates pinned managed heap region (POH) and use array
+    /// </summary>
+    [Benchmark(Description = "Managed Heap (Pinned Array)")]
+    public unsafe void AllocateManagedHeapArrayPinned()
+    {
+        var buffer = GC.AllocateArray<int>(Size, true);
+        void* destination = Unsafe.AsPointer(ref buffer[0]);
+        nuint size = (nuint)buffer.Length * sizeof(int);
+        FillRegion(destination, size, fillValue);
+        ClearRegion(destination, size);
+    }
+
+    /// <summary>
+    /// Allocates managed heap region and use span
     /// </summary>
     [Benchmark(Description = "Managed Heap (Span)")]
     public unsafe void AllocateManagedHeapSpan()
@@ -114,26 +129,26 @@ public class MemoryAllocationController : Controller
     }
 
     /// <summary>
-    /// Allocates native heap region and use IntPtr.
+    /// Allocates native heap region and use IntPtr
     /// </summary>
     [Benchmark(Description = "Native Heap (Pointer)")]
     public unsafe void AllocateNativeHeapPointer()
     {
-        int size = Size * Unsafe.SizeOf<int>();
-        using NativeHeapMemoryRegion buffer = new(size);
+        var size = (nuint)(Size * Unsafe.SizeOf<int>());
+        using MemoryRegionNative buffer = new(size);
         void* destination = buffer.Pointer.ToPointer();
         FillRegion(destination, (nuint)size, fillValue);
         ClearRegion(destination, (nuint)size);
     }
 
     /// <summary>
-    /// Allocates native heap region and use span.
+    /// Allocates native heap region and use span
     /// </summary>
     [Benchmark(Description = "Native Heap (Span)")]
     public unsafe void AllocateNativeHeapSpan()
     {
-        int size = Size * Unsafe.SizeOf<int>();
-        using NativeHeapMemoryRegion buffer = new(size);
+        var size = (nuint)(Size * Unsafe.SizeOf<int>());
+        using MemoryRegionNative buffer = new(size);
         ReadOnlySpan<int> span = new(buffer.Pointer.ToPointer(), Size);
         void* destination = Unsafe.AsPointer(ref MemoryMarshal.GetReference(span));
         FillRegion(destination, (nuint)size, fillValue);

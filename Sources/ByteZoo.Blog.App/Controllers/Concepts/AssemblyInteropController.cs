@@ -212,7 +212,7 @@ public partial class AssemblyInteropController : Controller
         NativeLibrary.SetDllImportResolver(Assembly.GetExecutingAssembly(), AssemblyLibraryResolver.Resolve);
         var size = 256;
         nuint byteCount = (nuint)size * sizeof(int);
-        using var region = new ManagedHeapMemoryRegion(size);
+        using var region = new MemoryRegionManaged(size);
         region.Fill(0x03);
         displayService.WriteInformation($"Function 1: Result = {AssemblyFunction1(true, 2, 3, '\u0004', 5, 6, 7, 8, 9, 10)}");
         displayService.WriteInformation($"Function 2: Result = {AssemblyFunction2(1.01f, 2.02d, 3.03f, 4.04d, 5.05f, 6.06d, 7.07f, 8.08d, 9.09f, 10.10d)}");

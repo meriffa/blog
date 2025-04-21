@@ -1,48 +1,35 @@
-using Microsoft.Win32.SafeHandles;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace ByteZoo.Blog.Common.Interop;
 
 /// <summary>
-/// Managed heap memory region
+/// Memory region
 /// </summary>
-public partial class ManagedHeapMemoryRegion : SafeHandleMinusOneIsInvalid
+public abstract partial class MemoryRegion : SafeHandle
 {
 
     #region Properties
     /// <summary>
-    /// Managed heap memory region buffer
+    /// Memory region pointer
     /// </summary>
-    public int[] Buffer { get; }
+    public nint Pointer { get; init; }
 
     /// <summary>
-    /// Managed heap memory region size
+    /// Memory region size
     /// </summary>
-    public nuint Size { get; }
+    public nuint Size { get; init; }
 
-    /// <summary>
-    /// Managed heap memory region handle
-    /// </summary>
-    public GCHandle Handle { get; }
-
-    /// <summary>
-    /// Managed heap memory region pointer
-    /// </summary>
-    public nint Pointer { get; }
+    /// <inheritdoc/>
+    public override bool IsInvalid => Pointer == 0;
     #endregion
 
     #region Initialization
     /// <summary>
     /// Initialization
     /// </summary>
-    /// <param name="size"></param>
-    public ManagedHeapMemoryRegion(int size) : base(true)
+    public MemoryRegion() : base(0, true)
     {
-        Buffer = new int[size];
-        Size = (nuint)Buffer.Length * sizeof(int);
-        Handle = GCHandle.Alloc(Buffer, GCHandleType.Pinned);
-        Pointer = Handle.AddrOfPinnedObject();
     }
     #endregion
 
@@ -79,7 +66,7 @@ public partial class ManagedHeapMemoryRegion : SafeHandleMinusOneIsInvalid
     /// </summary>
     /// <param name="region"></param>
     /// <returns></returns>
-    public bool CompareWith(ManagedHeapMemoryRegion region)
+    public bool CompareWith(MemoryRegion region)
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             return Size == region.Size && CompareRegionsLinux(Pointer, region.Pointer, Size) == 0;
@@ -87,15 +74,6 @@ public partial class ManagedHeapMemoryRegion : SafeHandleMinusOneIsInvalid
             return Size == region.Size && CompareRegionsWindows(Pointer, region.Pointer, Size) == 0;
         else
             throw new("The current OS platform is not supported.");
-    }
-    #endregion
-
-    #region Protected Methods
-    /// <inheritdoc/>
-    protected override bool ReleaseHandle()
-    {
-        Handle.Free();
-        return true;
     }
     #endregion
 
@@ -108,7 +86,7 @@ public partial class ManagedHeapMemoryRegion : SafeHandleMinusOneIsInvalid
     /// <param name="size"></param>
     /// <returns></returns>
     [LibraryImport("libc", EntryPoint = "memset")]
-    private static partial IntPtr FillRegionLinux(IntPtr region, int fill, nuint size);
+    private static partial IntPtr FillRegionLinux(IntPtr region, byte fill, nuint size);
 
     /// <summary>
     /// Fill memory region with specified fill value (Windows)

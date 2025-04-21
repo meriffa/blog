@@ -18,8 +18,8 @@ public class PInvokeController : Controller
     {
         var size = 256;
         byte fillValue = 0x03;
-        using var region1 = new ManagedHeapMemoryRegion(size);
-        using var region2 = new ManagedHeapMemoryRegion(size);
+        using var region1 = new MemoryRegionManaged(size);
+        using var region2 = new MemoryRegionManaged(size);
         displayService.WriteInformation($"Memory regions allocated (Buffer 1 = {region1.Buffer.Sum()}, Buffer 2 = {region2.Buffer.Sum()}).");
         region1.Fill(fillValue);
         region2.Fill(fillValue);
