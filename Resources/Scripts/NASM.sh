@@ -111,10 +111,13 @@ DisplayApplicationDetails() {
 # Debug commands
 DebugCommands() {
   target create ByteZoo.Blog.Asm.Application                                                    # Create Target
+  target create dotnet                                                                          # Create Target
+  process launch --stop-at-entry                                                                # Create Process
+  process launch --stop-at-entry -- ByteZoo.Blog.App.dll Concepts-AssemblyInterop               # Create Process
   breakpoint set --basename call_target                                                         # Set Breakpoint
   breakpoint set --basename _start                                                              # Set Breakpoint
+  breakpoint set --basename Assembly_Function5                                                  # Set Breakpoint
   breakpoint set -a [Address]                                                                   # Set Breakpoint
-  process launch --stop-at-entry                                                                # Create Process
   c                                                                                             # Resume Execution
   ni                                                                                            # Instruction single step (over calls)
   si                                                                                            # Instruction single step (into calls)

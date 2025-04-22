@@ -203,6 +203,16 @@ public partial class AssemblyInteropController : Controller
     }
     #endregion
 
+    #region Delegates
+    /// <summary>
+    /// Assembly function 5 callback
+    /// </summary>
+    /// <param name="a"></param>
+    /// <param name="b"></param>
+    /// <returns></returns>
+    private delegate long AssemblyFunction5Callback(long a, long b);
+    #endregion
+
     #region Protected Methods
     /// <summary>
     /// Execute controller
@@ -223,6 +233,7 @@ public partial class AssemblyInteropController : Controller
         var p7 = new int[] { 1, 2, 3, 4, 5, 6, 7 };
         var result4 = AssemblyFunction4(new Structure1 { Field1 = 0x11111111, Field2 = 0x22222222 }, new Structure2 { Field1 = 0x33, Field2 = 0x44444444 }, ref p3, out var p4, ref p5, "Input text.", p7, p7.Length);
         displayService.WriteInformation($"Function 4: Result = [{result4.Field1:X16}, {result4.Field2}, {result4.Field3}], P3 = [{p3.Field1:X8}, {p3.Field2:X8}], P4 = [{p4.Field1:X8}, {p4.Field2:X8}]");
+        displayService.WriteInformation($"Function 5: Result = {AssemblyFunction5(111, 222, (a, b) => a + b)}");
         displayService.Wait();
     }
     #endregion
@@ -287,6 +298,16 @@ public partial class AssemblyInteropController : Controller
     /// <returns></returns>
     [LibraryImport("ByteZoo.Blog.Asm.Library", EntryPoint = "Assembly_Function4", SetLastError = false, StringMarshalling = StringMarshalling.Utf8)]
     private static partial Structure4 AssemblyFunction4(Structure1 p1, Structure2 p2, ref Structure1 p3, out Structure1 p4, [MarshalUsing(typeof(DecimalMarshaller))] ref decimal p5, string p6, in int[] p7, int p8);
+
+    /// <summary>
+    /// Assembly function 5 (managed callback function)
+    /// </summary>
+    /// <param name="p1"></param>
+    /// <param name="p2"></param>
+    /// <param name="p3"></param>
+    /// <returns></returns>
+    [LibraryImport("ByteZoo.Blog.Asm.Library", EntryPoint = "Assembly_Function5", SetLastError = false)]
+    private static partial long AssemblyFunction5(long p1, long p2, AssemblyFunction5Callback p3);
     #endregion
 
 }

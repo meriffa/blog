@@ -8,6 +8,7 @@
                         global                  Assembly_Function2
                         global                  Assembly_Function3
                         global                  Assembly_Function4
+                        global                  Assembly_Function5
 
                         section                 .text
 
@@ -118,6 +119,14 @@ Assembly_Function4:     push                    rbp                             
                         mov                     dword [rdx + 4], 0xAAAAAAAA                     ; p3.Field2
                         mov                     dword [rcx], 0x77777777                         ; p4.Field1
                         mov                     dword [rcx + 4], 0x88888888                     ; p4.Field1
+                        pop                     rbp
+                        ret
+
+; Return the result of AssemblyFunction5Callback managed function
+Assembly_Function5:     push                    rbp                                             ; long AssemblyFunction5(long p1, long p2, AssemblyFunction5Callback p3)
+                        mov                     rbp, rsp
+                        xor                     rax, rax
+                        call                    rdx                                             ; p3
                         pop                     rbp
                         ret
 
