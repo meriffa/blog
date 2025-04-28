@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 using ByteZoo.Blog.Common.Interop;
 using ByteZoo.Blog.Common.Services;
 using CommandLine;
@@ -13,7 +14,7 @@ namespace ByteZoo.Blog.App.Controllers.Concepts;
 /// <summary>
 /// Intrinsics controller
 /// </summary>
-[Verb("Concepts-Intrinsics", HelpText = "Intrinsics operation.")]
+[Verb("Concepts-Intrinsics", HelpText = "Intrinsics operation."), GroupBenchmarksBy(BenchmarkLogicalGroupRule.ByCategory), CategoriesColumn]
 public partial class IntrinsicsController : Controller
 {
 
@@ -736,6 +737,13 @@ public partial class IntrinsicsController : Controller
     #endregion
 
     #region Benchmarks
+
+    #region Setup
+    /// <summary>
+    /// Region 0
+    /// </summary>
+    private int[]? region0;
+
     /// <summary>
     /// Region 1
     /// </summary>
@@ -758,43 +766,112 @@ public partial class IntrinsicsController : Controller
     [GlobalSetup]
     public void Setup()
     {
+        region0 = MemoryService.GenerateRegionInt(Size);
         region1 = MemoryService.GenerateRegionByte(Size);
         region2 = MemoryService.CopyRegion(region1);
     }
+    #endregion
 
+    #region Sum
+    /// <summary>
+    /// Sum memory region benchmark
+    /// </summary>
+    /// <returns></returns>
+    [Benchmark(Baseline = true, Description = "Sum (Loop)"), BenchmarkCategory("Sum")]
+    public int SumLoopBenchmark() => SumLoop(region0);
+
+    /// <summary>
+    /// Sum memory region benchmark
+    /// </summary>
+    /// <returns></returns>
+    [Benchmark(Description = "Sum (LINQ)"), BenchmarkCategory("Sum")]
+    public int SumLinqBenchmark() => SumLinq(region0!);
+
+    /// <summary>
+    /// Sum memory region benchmark
+    /// </summary>
+    /// <returns></returns>
+    [Benchmark(Description = "Sum (Unrolled)"), BenchmarkCategory("Sum")]
+    public int SumUnrolledBenchmark() => SumUnrolled(region0);
+
+    /// <summary>
+    /// Sum memory region benchmark
+    /// </summary>
+    /// <returns></returns>
+    [Benchmark(Description = "Sum (Vector)"), BenchmarkCategory("Sum")]
+    public int SumVectorBenchmark() => SumVector(region0);
+
+    /// <summary>
+    /// Sum memory region benchmark
+    /// </summary>
+    /// <returns></returns>
+    [Benchmark(Description = "Sum (AVX2)"), BenchmarkCategory("Sum")]
+    public int SumAvx2Benchmark() => Avx2.IsSupported ? SumAvx2(region0) : 0;
+
+    /// <summary>
+    /// Sum memory region benchmark
+    /// </summary>
+    /// <returns></returns>
+    [Benchmark(Description = "Sum (AVX2 Interop)"), BenchmarkCategory("Sum")]
+    public unsafe int SumAvx2InteropBenchmark()
+    {
+        fixed (int* pRegion = region0)
+            return Avx2.IsSupported ? SumAvx2Interop(pRegion, region0!.Length) : 0;
+    }
+
+    /// <summary>
+    /// Sum memory region benchmark
+    /// </summary>
+    /// <returns></returns>
+    [Benchmark(Description = "Sum (AVX-512)"), BenchmarkCategory("Sum")]
+    public int SumAvx512Benchmark() => Avx512F.IsSupported ? SumAvx512(region0) : 0;
+
+    /// <summary>
+    /// Sum memory region benchmark
+    /// </summary>
+    /// <returns></returns>
+    [Benchmark(Description = "Sum (AVX-512 Interop)"), BenchmarkCategory("Sum")]
+    public unsafe int SumAvx512InteropBenchmark()
+    {
+        fixed (int* pRegion = region0)
+            return Avx512F.IsSupported ? SumAvx512Interop(pRegion, region0!.Length) : 0;
+    }
+    #endregion
+
+    #region Compare
     /// <summary>
     /// Compare memory regions benchmark
     /// </summary>
     /// <returns></returns>
-    [Benchmark(Baseline = true, Description = "Compare (Loop)")]
+    [Benchmark(Baseline = true, Description = "Compare (Loop)"), BenchmarkCategory("Compare")]
     public bool CompareLoopBenchmark() => CompareLoop(region1, region2);
 
     /// <summary>
     /// Compare memory regions benchmark
     /// </summary>
     /// <returns></returns>
-    [Benchmark(Description = "Compare (LINQ)")]
+    [Benchmark(Description = "Compare (LINQ)"), BenchmarkCategory("Compare")]
     public bool CompareLinqBenchmark() => CompareLinq(region1, region2);
 
     /// <summary>
     /// Compare memory regions benchmark
     /// </summary>
     /// <returns></returns>
-    [Benchmark(Description = "Compare (Vectors)")]
+    [Benchmark(Description = "Compare (Vectors)"), BenchmarkCategory("Compare")]
     public bool CompareVectorBenchmark() => CompareVector(region1, region2);
 
     /// <summary>
     /// Compare memory regions benchmark
     /// </summary>
     /// <returns></returns>
-    [Benchmark(Description = "Compare (AVX2)")]
+    [Benchmark(Description = "Compare (AVX2)"), BenchmarkCategory("Compare")]
     public bool CompareAvx2Benchmark() => Avx2.IsSupported && CompareAvx2(region1, region2);
 
     /// <summary>
     /// Compare memory regions benchmark
     /// </summary>
     /// <returns></returns>
-    [Benchmark(Description = "Compare (AVX2 Interop)")]
+    [Benchmark(Description = "Compare (AVX2 Interop)"), BenchmarkCategory("Compare")]
     public unsafe bool CompareAvx2InteropBenchmark()
     {
         fixed (byte* pRegion1 = region1)
@@ -806,20 +883,22 @@ public partial class IntrinsicsController : Controller
     /// Compare memory regions benchmark
     /// </summary>
     /// <returns></returns>
-    [Benchmark(Description = "Compare (AVX-512)")]
+    [Benchmark(Description = "Compare (AVX-512)"), BenchmarkCategory("Compare")]
     public bool CompareAvx512Benchmark() => Avx512F.IsSupported && CompareAvx512(region1, region2);
 
     /// <summary>
     /// Compare memory regions benchmark
     /// </summary>
     /// <returns></returns>
-    [Benchmark(Description = "Compare (AVX-512 Interop)")]
+    [Benchmark(Description = "Compare (AVX-512 Interop)"), BenchmarkCategory("Compare")]
     public unsafe bool CompareAvx512InteropBenchmark()
     {
         fixed (byte* pRegion1 = region1)
         fixed (byte* pRegion2 = region2)
             return Avx512F.IsSupported && CompareAvx512Interop(pRegion1, pRegion2, region1!.Length);
     }
+    #endregion
+
     #endregion
 
 }
