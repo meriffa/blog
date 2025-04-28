@@ -3,6 +3,12 @@
 RED='\033[0;31m'
 NC='\033[0m'
 
+# Initialization
+FLAG_OUTPUT_FILE="./CoreDump_Full.%p"
+FLAG_SYMBOLS_FOLDER=~/Symbols
+FLAG_MEMORY_THRESHOLD_TYPE="Used"
+FLAG_INTERVAL=5
+
 # Display error and stop
 DisplayErrorAndStop() {
   echo -e "${RED}$1${NC}"
@@ -110,12 +116,64 @@ WaitForCpuUtilizationThreshold() {
   done
 }
 
-# Get parameters
-FLAG_OUTPUT_FILE="./CoreDump_Full.%p"
-FLAG_SYMBOLS_FOLDER=~/Symbols
-FLAG_MEMORY_THRESHOLD_TYPE="Used"
-FLAG_INTERVAL=5
-PARSED_ARGUMENTS=$(getopt -q --alternative --options n:,o:,s,f:,g,m:,c: --longoptions name:,output:,symbols,folder:,gc,memory:,memoryType:,cpu:,interval: -- "$@")
+# Create core dump
+CreateDump() {
+  [ -z $FLAG_TARGET_NAME ] && DisplayErrorAndStop "Target process name (-n|--name) not specified."
+  TARGET_PID=$(GetTargetProcessId $FLAG_TARGET_NAME)
+  [ -z $TARGET_PID ] && DisplayErrorAndStop "Target .NET Core process name '$FLAG_TARGET_NAME' not found."
+  [ ! -z $FLAG_MEMORY_THRESHOLD ] && [ ! -z $FLAG_CPU_THRESHOLD ] && DisplayErrorAndStop "Using both memory allocation and CPU utilization thresholds is not supported."
+  if [ ! -z $FLAG_MEMORY_THRESHOLD ]; then
+    WaitForMemoryAllocationThreshold $TARGET_PID $FLAG_MEMORY_THRESHOLD $FLAG_MEMORY_THRESHOLD_TYPE
+    [ $? != 0 ] && DisplayErrorAndStop "Process terminated (PID = $TARGET_PID)."
+  fi
+  if [ ! -z $FLAG_CPU_THRESHOLD ]; then
+    WaitForCpuUtilizationThreshold $TARGET_PID $FLAG_CPU_THRESHOLD
+    [ $? != 0 ] && DisplayErrorAndStop "Process terminated (PID = $TARGET_PID)."
+  fi
+  [ ! -z $FLAG_TRIGGER_GC ] && TriggerGCCollect $TARGET_PID
+  OUTPUT_FILE=$(CaptureDotNetCoreDump $TARGET_PID $FLAG_OUTPUT_FILE)
+  [ -z $OUTPUT_FILE ] && DisplayErrorAndStop "Capture .NET Core dump operation failed."
+  echo ".NET Core dump created (PID = $TARGET_PID, File = '$OUTPUT_FILE')."
+  [ ! -z $FLAG_SYMBOLS_DOWNLOAD ] && DownloadSymbols $OUTPUT_FILE $FLAG_SYMBOLS_FOLDER
+}
+
+# Setup Linux core dump
+SetupCoreDump() {
+  echo "/tmp/CoreDump.%p" | sudo tee /proc/sys/kernel/core_pattern
+  sudo sysctl -p
+  cat /proc/sys/kernel/core_pattern
+  echo 0x0000003F > /proc/self/coredump_filter
+  cat /proc/self/coredump_filter
+  ulimit -c unlimited
+  ulimit -a
+}
+
+# Display method disassembly
+DisplayMethodDisassembly() {
+  [ -z $1 ] && DisplayErrorAndStop "Core dump file name (-n|--name) not specified."
+  [ ! -f $1 ] && DisplayErrorAndStop "Core dump file '$1' not found."
+  [ -z $2 ] && DisplayErrorAndStop "Assembly name (--assembly) not specified."
+  [ -z $3 ] && DisplayErrorAndStop "Class name (--class) not specified."
+  [ -z $4 ] && DisplayErrorAndStop "Method name (--method) not specified."
+  local METHOD_TABLE=$(lldb -c $1 dotnet --batch -o "name2ee $2!$3" | sed -n "s/^MethodTable:\s\+\(.\+\)$/\1/p" | tr '[:lower:]' '[:upper:]')
+  [ -z $METHOD_TABLE ] && DisplayErrorAndStop "Class '$2!$3' not found."
+  local METHOD_DESCRIPTOR=$(lldb -c $1 dotnet --batch -o "dumpmt -md $METHOD_TABLE" | sed -n "s/^\S\+\s\+\(\S\+\).\+$4.\+$/\1/p" | tr '[:lower:]' '[:upper:]')
+  [ -z $METHOD_DESCRIPTOR ] && DisplayErrorAndStop "Method '$4' not found."
+  local METHOD_DISASSEMBLY=$(lldb -c $1 dotnet --batch -o "clru $METHOD_DESCRIPTOR")
+  local DISASSEMBLY_START=$(echo "$METHOD_DISASSEMBLY" | grep -n "(lldb) clru $METHOD_DESCRIPTOR" | cut -d ":" -f 1)
+  echo "$METHOD_DISASSEMBLY" | sed "1,$(echo $DISASSEMBLY_START)d"
+}
+
+# Get specified operation
+if [ -z $1 ]; then
+  DisplayErrorAndStop "No operation specified."
+elif [ -n $1 ]; then
+  OPERATION=$( tr '[:upper:]' '[:lower:]' <<<"$1" )
+fi
+
+# Get operation parameters
+shift
+PARSED_ARGUMENTS=$(getopt -q --alternative --options n:,o:,s,f:,g,m:,c: --longoptions name:,output:,symbols,folder:,gc,memory:,memoryType:,cpu:,interval:,assembly:,class:,method: -- "$@")
 eval set -- "$PARSED_ARGUMENTS"
 while : ; do
   case "$1" in
@@ -128,25 +186,20 @@ while : ; do
     --memoryType) FLAG_MEMORY_THRESHOLD_TYPE="$2"; shift 2 ;;
     -c | --cpu) FLAG_CPU_THRESHOLD="$2"; shift 2 ;;
     --interval) FLAG_INTERVAL="$2"; shift 2 ;;
+    --assembly) FLAG_ASSEMBLY_NAME="$2"; shift 2 ;;
+    --class) FLAG_CLASS_NAME="$2"; shift 2 ;;
+    --method) FLAG_METHOD_NAME="$2"; shift 2 ;;
     --) shift; break ;;
   esac
 done
 
-# Script body
-[ -z $FLAG_TARGET_NAME ] && DisplayErrorAndStop "Target process name (-n|--name) is not specified."
-TARGET_PID=$(GetTargetProcessId $FLAG_TARGET_NAME)
-[ -z $TARGET_PID ] && DisplayErrorAndStop "Target .NET Core process name '$FLAG_TARGET_NAME' is not found."
-[ ! -z $FLAG_MEMORY_THRESHOLD ] && [ ! -z $FLAG_CPU_THRESHOLD ] && DisplayErrorAndStop "Using both memory allocation and CPU utilization thresholds is not supported."
-if [ ! -z $FLAG_MEMORY_THRESHOLD ]; then
-  WaitForMemoryAllocationThreshold $TARGET_PID $FLAG_MEMORY_THRESHOLD $FLAG_MEMORY_THRESHOLD_TYPE
-  [ $? != 0 ] && DisplayErrorAndStop "Process terminated (PID = $TARGET_PID)."
-fi
-if [ ! -z $FLAG_CPU_THRESHOLD ]; then
-  WaitForCpuUtilizationThreshold $TARGET_PID $FLAG_CPU_THRESHOLD
-  [ $? != 0 ] && DisplayErrorAndStop "Process terminated (PID = $TARGET_PID)."
-fi
-[ ! -z $FLAG_TRIGGER_GC ] && TriggerGCCollect $TARGET_PID
-OUTPUT_FILE=$(CaptureDotNetCoreDump $TARGET_PID $FLAG_OUTPUT_FILE)
-[ -z $OUTPUT_FILE ] && DisplayErrorAndStop "Capture .NET Core dump operation failed."
-echo ".NET Core dump created (PID = $TARGET_PID, File = '$OUTPUT_FILE')."
-[ ! -z $FLAG_SYMBOLS_DOWNLOAD ] && DownloadSymbols $OUTPUT_FILE $FLAG_SYMBOLS_FOLDER
+# Execute operation
+case $OPERATION in
+  create)
+    CreateDump ;;
+  setupcoredump)
+    SetupCoreDump ;;
+  displaymethod)
+    DisplayMethodDisassembly $FLAG_TARGET_NAME $FLAG_ASSEMBLY_NAME $FLAG_CLASS_NAME $FLAG_METHOD_NAME ;;
+  *) DisplayErrorAndStop "Invalid operation '$OPERATION' specified." ;;
+esac
