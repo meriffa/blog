@@ -14,9 +14,10 @@ public static class MemoryService
     /// <returns></returns>
     public static int[] GenerateRegionInt(int length)
     {
+        int range = Random.Shared.Next();
         int[] result = new int[length];
         for (int i = 0; i < length; i++)
-            result[i] = Random.Shared.Next();
+            result[i] = Random.Shared.Next(-range, range);
         return result;
     }
 
@@ -29,6 +30,18 @@ public static class MemoryService
     {
         byte[] result = new byte[length];
         Random.Shared.NextBytes(result);
+        return result;
+    }
+
+    /// <summary>
+    /// Returns memory region copy
+    /// </summary>
+    /// <param name="region"></param>
+    /// <returns></returns>
+    public static int[] CopyRegion(int[] region)
+    {
+        int[] result = new int[region.Length];
+        region.CopyTo(result, 0);
         return result;
     }
 

@@ -19,7 +19,7 @@ int call_target(int a, int b, int c, int d, int e, int f, int g, int h, int i)
 // Application entry
 int main(int argc, char *argv[])
 {
+    printf("* ByteZoo.Blog.C Application *\n");
     int r = call_target(0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9);
-    printf("ABI\n");
     return r;
 }

@@ -50,7 +50,7 @@ CompileSourceFolder() {
       case "$PATH_NAME" in *.asm|*.S)
         local FILE_NAME_AND_EXTENSION=$(basename "$PATH_NAME")
         local NAME_ONLY="${FILE_NAME_AND_EXTENSION%.*}"
-        nasm -f elf64 "$PATH_NAME" -i "./inc" -o "./bin/$NAME_ONLY.o"
+        nasm -f elf64 "$PATH_NAME" -i "./inc" -i "./src/Library" -o "./bin/$NAME_ONLY.o"
         [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' compile failed."
         local OUTPUT_TYPE=$(GetSourceOutputType $NAME_ONLY)
         case $OUTPUT_TYPE in
@@ -114,9 +114,11 @@ DebugCommands() {
   target create dotnet                                                                          # Create Target
   process launch --stop-at-entry                                                                # Create Process
   process launch --stop-at-entry -- ByteZoo.Blog.App.dll Concepts-AssemblyInterop               # Create Process
+  process launch --stop-at-entry -- ByteZoo.Blog.App.dll Concepts-Intrinsics                    # Create Process
   breakpoint set --basename call_target                                                         # Set Breakpoint
   breakpoint set --basename _start                                                              # Set Breakpoint
   breakpoint set --basename Assembly_Function5                                                  # Set Breakpoint
+  breakpoint set --basename CountAvx2_Interop                                                   # Set Breakpoint
   breakpoint set -a [Address]                                                                   # Set Breakpoint
   c                                                                                             # Resume Execution
   ni                                                                                            # Instruction single step (over calls)

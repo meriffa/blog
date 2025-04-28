@@ -25,22 +25,22 @@ CompileSources() {
 # Compile C source folder
 CompileSourceFolder() {
   if [ "$COMPILE_RELEASE" == "1" ]; then
-    gcc ./src/ABI.c -g -o ./bin/ABI -O3
+    gcc ./src/ByteZoo.Blog.C.c -g -o ./bin/ByteZoo.Blog.C -O3
   else
-    gcc ./src/ABI.c -g -o ./bin/ABI
+    gcc ./src/ByteZoo.Blog.C.c -g -o ./bin/ByteZoo.Blog.C
   fi
-  # gcc ./src/ABI.c -g -o ./bin/ABI -mno-red-zone
-  echo "'$(realpath ./bin/ABI)' compiled (Size = $(wc -c < ./bin/ABI))."
+  # gcc ./src/ByteZoo.Blog.C.c -g -o ./bin/ByteZoo.Blog.C -mno-red-zone
+  echo "'$(realpath ./bin/ByteZoo.Blog.C)' compiled (Size = $(wc -c < ./bin/ByteZoo.Blog.C))."
 }
 
 # Debug commands
 DebugCommands() {
-  target create ABI                                                                             # Create Target
+  target create ByteZoo.Blog.C                                                                  # Create Target
   breakpoint set --basename call_target                                                         # Set Breakpoint
-  breakpoint set --file ABI.c --line 18                                                         # Set Breakpoint
+  breakpoint set --file ByteZoo.Blog.C.c --line 18                                              # Set Breakpoint
   process launch --stop-at-entry                                                                # Create Process
   f                                                                                             # Display C Source
-  image dump symtab ABI                                                                         # Display Symbols
+  image dump symtab ByteZoo.Blog.C                                                              # Display Symbols
 }
 
 # Get specified operation
