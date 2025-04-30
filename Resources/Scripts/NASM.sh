@@ -42,37 +42,30 @@ GetSourceOutputType() {
 
 # Compile assembly source folder
 CompileSourceFolder() {
-  shopt -s nullglob dotglob
-  for PATH_NAME in "$1"/*; do
-    if [ -d "$PATH_NAME" ]; then
-      CompileSourceFolder "$PATH_NAME"
-    else
-      case "$PATH_NAME" in *.asm|*.S)
-        local FILE_NAME_AND_EXTENSION=$(basename "$PATH_NAME")
-        local NAME_ONLY="${FILE_NAME_AND_EXTENSION%.*}"
-        nasm -f elf64 "$PATH_NAME" -i "./inc" -i "./src/Library" -o "./bin/$NAME_ONLY.o"
-        [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' compile failed."
-        local OUTPUT_TYPE=$(GetSourceOutputType $NAME_ONLY)
-        case $OUTPUT_TYPE in
-          "Application")
-            local OUTPUT_FILE_NAME="./bin/$NAME_ONLY"
-            ld -o $OUTPUT_FILE_NAME "./bin/$NAME_ONLY.o"
-            [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' link failed." ;;
-          "Library")
-            local OUTPUT_FILE_NAME="./bin/$NAME_ONLY.so"
-            ld -shared -o $OUTPUT_FILE_NAME "./bin/$NAME_ONLY.o"
-            [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' link failed." ;;
-          *) DisplayErrorAndStop "Unknown assembly '$PATH_NAME' output type." ;;
-        esac
-        rm "./bin/$NAME_ONLY.o"
-        [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' cleanup failed."
-        if [ "$COMPILE_RELEASE" == "1" ]; then
-          strip -s $OUTPUT_FILE_NAME
-          [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' strip failed."
-        fi
-        echo "'$(realpath $OUTPUT_FILE_NAME)' compiled (Type = $OUTPUT_TYPE, Size = $(wc -c < $OUTPUT_FILE_NAME))."
-      esac
+  for PATH_NAME in $1/*.asm; do
+    local FILE_NAME_AND_EXTENSION=$(basename "$PATH_NAME")
+    local NAME_ONLY="${FILE_NAME_AND_EXTENSION%.*}"
+    nasm -f elf64 "$PATH_NAME" -i "./Includes" -o "./bin/$NAME_ONLY.o"
+    [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' compile failed."
+    local OUTPUT_TYPE=$(GetSourceOutputType $NAME_ONLY)
+    case $OUTPUT_TYPE in
+      "Application")
+        local OUTPUT_FILE_NAME="./bin/$NAME_ONLY"
+        ld -o $OUTPUT_FILE_NAME "./bin/$NAME_ONLY.o"
+        [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' link failed." ;;
+      "Library")
+        local OUTPUT_FILE_NAME="./bin/$NAME_ONLY.so"
+        ld -shared -o $OUTPUT_FILE_NAME "./bin/$NAME_ONLY.o"
+        [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' link failed." ;;
+      *) DisplayErrorAndStop "Unknown assembly '$PATH_NAME' output type." ;;
+    esac
+    rm "./bin/$NAME_ONLY.o"
+    [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' cleanup failed."
+    if [ "$COMPILE_RELEASE" == "1" ]; then
+      strip -s $OUTPUT_FILE_NAME
+      [ $? != 0 ] && DisplayErrorAndStop "Assembly '$PATH_NAME' strip failed."
     fi
+    echo "'$(realpath $OUTPUT_FILE_NAME)' compiled (Type = $OUTPUT_TYPE, Size = $(wc -c < $OUTPUT_FILE_NAME))."
   done
 }
 
@@ -149,7 +142,7 @@ done
 case $OPERATION in
   install)
     InstallNASM ;;
-  compile)
+  build)
     CompileSources ;;
   clean)
     CleanSources ;;

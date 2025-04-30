@@ -5,5 +5,13 @@
     "editor.minimap.enabled": false,
     "typescript.surveys.enabled": false,
     "editor.cursorBlinking": "solid",
-    "dotnet.defaultSolution": "Sources/ByteZoo.Blog.sln",
+    "files.associations": {
+        "chrono": "c",
+        "random": "c",
+        "limits": "c",
+        "algorithm": "c",
+        "stdbool.h": "c",
+        "stdio.h": "c"
+    },
+    "dotnet.defaultSolution": "Sources/ByteZoo.Blog.sln"
 }

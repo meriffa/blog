@@ -9,10 +9,10 @@
                         global                  MaxAvx512_Interop
                         global                  SumAvx2_Interop
                         global                  SumAvx512_Interop
-                        global                  CompareAvx2_Interop
-                        global                  CompareAvx512_Interop
                         global                  CountAvx2_Interop
                         global                  CountAvx512_Interop
+                        global                  CompareAvx2_Interop
+                        global                  CompareAvx512_Interop
 
 ; Constants
 ELEMENT_SIZE            equ                     4                                               ; sizeof(int)
@@ -21,7 +21,7 @@ YMM_SIZE                equ                     32                              
 ZMM_SIZE                equ                     64                                              ; ZMM register size (512-bit)
 
 ; Return memory region minimum (AVX2)
-MinAvx2_Interop:        push                    rbp                                             ; int MinAvx2Interop(int* pRegion, int itemCount);
+MinAvx2_Interop:        push                    rbp                                             ; int MinAvx2_Interop(int* pRegion, int itemCount);
                         mov                     rbp, rsp
                         xor                     rax, rax
                         test                    esi, esi
@@ -59,7 +59,7 @@ MinAvx2_Interop:        push                    rbp                             
                         ret
 
 ; Return memory region minimum (AVX-512)
-MinAvx512_Interop:      push                    rbp                                             ; int MinAvx512Interop(int* pRegion, int itemCount);
+MinAvx512_Interop:      push                    rbp                                             ; int MinAvx512_Interop(int* pRegion, int itemCount);
                         mov                     rbp, rsp
                         xor                     rax, rax
                         test                    esi, esi
@@ -97,7 +97,7 @@ MinAvx512_Interop:      push                    rbp                             
                         ret
 
 ; Return memory region maximum (AVX2)
-MaxAvx2_Interop:        push                    rbp                                             ; int MaxAvx2Interop(int* pRegion, int itemCount);
+MaxAvx2_Interop:        push                    rbp                                             ; int MaxAvx2_Interop(int* pRegion, int itemCount);
                         mov                     rbp, rsp
                         xor                     rax, rax
                         test                    esi, esi
@@ -135,7 +135,7 @@ MaxAvx2_Interop:        push                    rbp                             
                         ret
 
 ; Return memory region maximum (AVX-512)
-MaxAvx512_Interop:      push                    rbp                                             ; int MaxAvx512Interop(int* pRegion, int itemCount);
+MaxAvx512_Interop:      push                    rbp                                             ; int MaxAvx512_Interop(int* pRegion, int itemCount);
                         mov                     rbp, rsp
                         xor                     rax, rax
                         test                    esi, esi
@@ -173,7 +173,7 @@ MaxAvx512_Interop:      push                    rbp                             
                         ret
 
 ; Return memory region sum (AVX2)
-SumAvx2_Interop:        push                    rbp                                             ; int SumAvx2Interop(int* pRegion, int itemCount);
+SumAvx2_Interop:        push                    rbp                                             ; int SumAvx2_Interop(int* pRegion, int itemCount);
                         mov                     rbp, rsp
                         xor                     rax, rax
 ._pre_aligned:          test                    esi, esi
@@ -208,7 +208,7 @@ SumAvx2_Interop:        push                    rbp                             
                         ret
 
 ; Return memory region sum (AVX-512)
-SumAvx512_Interop:      push                    rbp                                             ; int SumAvx512Interop(int* pRegion, int itemCount);
+SumAvx512_Interop:      push                    rbp                                             ; int SumAvx512_Interop(int* pRegion, int itemCount);
                         mov                     rbp, rsp
                         xor                     rax, rax
 ._pre_aligned:          test                    esi, esi
@@ -241,68 +241,8 @@ SumAvx512_Interop:      push                    rbp                             
 ._complete:             pop                     rbp
                         ret
 
-; Compare memory regions (AVX2)
-CompareAvx2_Interop:    push                    rbp                                             ; int CompareAvx2Interop(byte* pRegion1, byte* pRegion2, int itemCount);
-                        mov                     rbp, rsp
-                        mov                     eax, 1
-                        test                    edx, edx
-                        jz                      ._complete
-._simd_loop:            cmp                     edx, YMM_SIZE / COMPARE_ELEMENT_SIZE
-                        jl                      ._post_simd
-                        vmovdqu                 ymm0, [rdi]
-                        vpcmpeqb                ymm0, ymm0, [rsi]
-                        vpmovmskb               ecx, ymm0
-                        cmp                     ecx, 0xFFFFFFFF
-                        jne                     ._no_match
-                        add                     rdi, YMM_SIZE
-                        add                     rsi, YMM_SIZE
-                        sub                     edx, YMM_SIZE / COMPARE_ELEMENT_SIZE
-                        jmp                     ._simd_loop
-._post_simd:            test                    edx, edx
-                        jz                      ._complete
-                        mov                     cl, [rdi]
-                        cmp                     cl, [rsi]
-                        jne                     ._no_match
-                        add                     rdi, COMPARE_ELEMENT_SIZE
-                        add                     rsi, COMPARE_ELEMENT_SIZE
-                        sub                     edx, 1
-                        jmp                     ._post_simd
-._no_match:             xor                     rax, rax
-._complete:             pop                     rbp
-                        ret
-
-; Compare memory regions (AVX-512)
-CompareAvx512_Interop:  push                    rbp                                             ; bool CompareAvx512Interop(byte* pRegion1, byte* pRegion2, int itemCount);
-                        mov                     rbp, rsp
-                        mov                     eax, 1
-                        test                    edx, edx
-                        jz                      ._complete
-._simd_loop:            cmp                     edx, ZMM_SIZE / COMPARE_ELEMENT_SIZE
-                        jl                      ._post_simd
-                        vmovdqu64               zmm0, [rdi]
-                        vpcmpeqb                k1, zmm0, [rsi]
-                        kmovq                   rcx, k1
-                        cmp                     rcx, 0xFFFFFFFFFFFFFFFF
-                        jne                     ._no_match
-                        add                     rdi, ZMM_SIZE
-                        add                     rsi, ZMM_SIZE
-                        sub                     edx, ZMM_SIZE / COMPARE_ELEMENT_SIZE
-                        jmp                     ._simd_loop
-._post_simd:            test                    edx, edx
-                        jz                      ._complete
-                        mov                     cl, [rdi]
-                        cmp                     cl, [rsi]
-                        jne                     ._no_match
-                        add                     rdi, COMPARE_ELEMENT_SIZE
-                        add                     rsi, COMPARE_ELEMENT_SIZE
-                        sub                     edx, 1
-                        jmp                     ._post_simd
-._no_match:             xor                     rax, rax
-._complete:             pop                     rbp
-                        ret
-
 ; Return item count in memory region (AVX2)
-CountAvx2_Interop:      push                    rbp                                             ; int CountAvx2Interop(int* pRegion, int itemCount);
+CountAvx2_Interop:      push                    rbp                                             ; int CountAvx2_Interop(int* pRegion, int itemCount, int item);
                         mov                     rbp, rsp
                         xor                     eax, eax
                         test                    esi, esi
@@ -335,7 +275,7 @@ CountAvx2_Interop:      push                    rbp                             
                         ret
 
 ; Return item count in memory region (AVX-512)
-CountAvx512_Interop:    push                    rbp                                             ; int CountAvx512Interop(int* pRegion, int itemCount, int item);
+CountAvx512_Interop:    push                    rbp                                             ; int CountAvx512_Interop(int* pRegion, int itemCount, int item);
                         mov                     rbp, rsp
                         xor                     eax, eax
                         test                    esi, esi
@@ -364,5 +304,65 @@ CountAvx512_Interop:    push                    rbp                             
 ._no_match:             add                     rdi, ELEMENT_SIZE
                         sub                     esi, 1
                         jmp                     ._post_simd_loop
+._complete:             pop                     rbp
+                        ret
+
+; Compare memory regions (AVX2)
+CompareAvx2_Interop:    push                    rbp                                             ; bool CompareAvx2_Interop(byte* pRegion1, byte* pRegion2, int itemCount);
+                        mov                     rbp, rsp
+                        mov                     eax, 1
+                        test                    edx, edx
+                        jz                      ._complete
+._simd_loop:            cmp                     edx, YMM_SIZE / COMPARE_ELEMENT_SIZE
+                        jl                      ._post_simd
+                        vmovdqu                 ymm0, [rdi]
+                        vpcmpeqb                ymm0, ymm0, [rsi]
+                        vpmovmskb               ecx, ymm0
+                        cmp                     ecx, 0xFFFFFFFF
+                        jne                     ._no_match
+                        add                     rdi, YMM_SIZE
+                        add                     rsi, YMM_SIZE
+                        sub                     edx, YMM_SIZE / COMPARE_ELEMENT_SIZE
+                        jmp                     ._simd_loop
+._post_simd:            test                    edx, edx
+                        jz                      ._complete
+                        mov                     cl, [rdi]
+                        cmp                     cl, [rsi]
+                        jne                     ._no_match
+                        add                     rdi, COMPARE_ELEMENT_SIZE
+                        add                     rsi, COMPARE_ELEMENT_SIZE
+                        sub                     edx, 1
+                        jmp                     ._post_simd
+._no_match:             xor                     rax, rax
+._complete:             pop                     rbp
+                        ret
+
+; Compare memory regions (AVX-512)
+CompareAvx512_Interop:  push                    rbp                                             ; bool CompareAvx512_Interop(byte* pRegion1, byte* pRegion2, int itemCount);
+                        mov                     rbp, rsp
+                        mov                     eax, 1
+                        test                    edx, edx
+                        jz                      ._complete
+._simd_loop:            cmp                     edx, ZMM_SIZE / COMPARE_ELEMENT_SIZE
+                        jl                      ._post_simd
+                        vmovdqu64               zmm0, [rdi]
+                        vpcmpeqb                k1, zmm0, [rsi]
+                        kmovq                   rcx, k1
+                        cmp                     rcx, 0xFFFFFFFFFFFFFFFF
+                        jne                     ._no_match
+                        add                     rdi, ZMM_SIZE
+                        add                     rsi, ZMM_SIZE
+                        sub                     edx, ZMM_SIZE / COMPARE_ELEMENT_SIZE
+                        jmp                     ._simd_loop
+._post_simd:            test                    edx, edx
+                        jz                      ._complete
+                        mov                     cl, [rdi]
+                        cmp                     cl, [rsi]
+                        jne                     ._no_match
+                        add                     rdi, COMPARE_ELEMENT_SIZE
+                        add                     rsi, COMPARE_ELEMENT_SIZE
+                        sub                     edx, 1
+                        jmp                     ._post_simd
+._no_match:             xor                     rax, rax
 ._complete:             pop                     rbp
                         ret

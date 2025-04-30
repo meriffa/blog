@@ -82,7 +82,7 @@
             "command": "./Resources/Scripts/NASM.sh",
             "type": "process",
             "args": [
-                "Compile"
+                "Build"
             ],
             "group": "build",
             "presentation": {
@@ -95,7 +95,7 @@
             "command": "./Resources/Scripts/NASM.sh",
             "type": "process",
             "args": [
-                "Compile",
+                "Build",
                 "--release"
             ],
             "group": "build",

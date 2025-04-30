@@ -12,8 +12,8 @@
                         %include                "Macros.inc"
                         %include                "String.inc"
                         %include                "CommandLine.inc"
-                        %include                "Fibonacci.inc"
-                        %include                "Tree.inc"
+                        %include                "./ByteZoo.Blog.Asm.Application/Fibonacci.asm"
+                        %include                "./ByteZoo.Blog.Asm.Application/Tree.asm"
 
 _start:                 Console_WriteLine       title_separator, title_separator_length         ; Display application title
                         Console_WriteLine_SZ    application_title

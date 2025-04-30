@@ -10,34 +10,28 @@ DisplayErrorAndStop() {
   exit 1
 }
 
-# Compile C sources
-CompileSources() {
+# Compile / cleanup C sources
+MakeSources() {
   pushd $SOLUTION_FOLDER/Sources/ByteZoo.Blog.C 1> /dev/null
-  [ $? != 0 ] && DisplayErrorAndStop "C source code folder not found."
-  if [ ! -d ./bin ]; then
-    mkdir ./bin
-    [ $? != 0 ] && DisplayErrorAndStop "C output folder creation failed."
-  fi
-  CompileSourceFolder .
+  [ $? != 0 ] && DisplayErrorAndStop "ByteZoo.Blog.C folder not found."
+  case $1 in
+    "Build")
+      make 1> /dev/null
+      [ $? != 0 ] && DisplayErrorAndStop "ByteZoo.Blog.C compile failed."
+      echo "'$(realpath ./bin/ByteZoo.Blog.C)' compiled (Size = $(wc -c < ./bin/ByteZoo.Blog.C))." ;;
+    "Clean")
+      make clean 1> /dev/null
+      [ $? != 0 ] && DisplayErrorAndStop "ByteZoo.Blog.C cleanup failed."
+      echo "ByteZoo.Blog.C cleanup completed." ;;
+  esac
   popd 1> /dev/null
-}
-
-# Compile C source folder
-CompileSourceFolder() {
-  if [ "$COMPILE_RELEASE" == "1" ]; then
-    gcc ./src/ByteZoo.Blog.C.c -g -o ./bin/ByteZoo.Blog.C -O3
-  else
-    gcc ./src/ByteZoo.Blog.C.c -g -o ./bin/ByteZoo.Blog.C
-  fi
-  # gcc ./src/ByteZoo.Blog.C.c -g -o ./bin/ByteZoo.Blog.C -mno-red-zone
-  echo "'$(realpath ./bin/ByteZoo.Blog.C)' compiled (Size = $(wc -c < ./bin/ByteZoo.Blog.C))."
 }
 
 # Debug commands
 DebugCommands() {
   target create ByteZoo.Blog.C                                                                  # Create Target
-  breakpoint set --basename call_target                                                         # Set Breakpoint
-  breakpoint set --file ByteZoo.Blog.C.c --line 18                                              # Set Breakpoint
+  breakpoint set --basename main                                                                # Set Breakpoint
+  breakpoint set --file ByteZoo.Blog.C.c --line 26                                              # Set Breakpoint
   process launch --stop-at-entry                                                                # Create Process
   f                                                                                             # Display C Source
   image dump symtab ByteZoo.Blog.C                                                              # Display Symbols
@@ -63,7 +57,9 @@ done
 
 # Execute operation
 case $OPERATION in
-  compile)
-    CompileSources ;;
+  build)
+    MakeSources "Build" ;;
+  clean)
+    MakeSources "Clean" ;;
   *) DisplayErrorAndStop "Invalid operation '$OPERATION' specified." ;;
 esac

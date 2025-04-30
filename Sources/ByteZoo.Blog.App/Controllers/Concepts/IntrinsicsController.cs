@@ -32,8 +32,8 @@ public partial class IntrinsicsController : Controller
         Min();
         Max();
         Sum();
-        Compare();
         Count();
+        Compare();
         displayService.Wait();
     }
     #endregion
@@ -464,6 +464,139 @@ public partial class IntrinsicsController : Controller
     private static unsafe partial int SumAvx512Interop(int* pRegion, int itemCount);
     #endregion
 
+    #region Count
+    /// <summary>
+    /// Count functions
+    /// </summary>
+    private unsafe void Count()
+    {
+        var region = MemoryService.GenerateRegionInt(REGION_SIZE);
+        var item = region[^1];
+        displayService.WriteInformation($"Count = {CountLoop(region, item):n0} (Loop)");
+        displayService.WriteInformation($"Count = {CountLinq(region, item):n0} (LINQ)");
+        displayService.WriteInformation($"Count = {CountVector(region, item):n0} (Vector)");
+        fixed (int* pRegion = region)
+        {
+            if (Avx2.IsSupported)
+            {
+                displayService.WriteInformation($"Count = {CountAvx2(region, item):n0} (AVX2)");
+                displayService.WriteInformation($"Count = {CountAvx2Interop(pRegion, region.Length, item):n0} (AVX2 Interop)");
+            }
+            if (Avx512F.IsSupported)
+            {
+                displayService.WriteInformation($"Count = {CountAvx512(region, item):n0} (AVX-512)");
+                displayService.WriteInformation($"Count = {CountAvx512Interop(pRegion, region.Length, item):n0} (AVX-512 Interop)");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Return item count in memory region (loop)
+    /// </summary>
+    /// <param name="region"></param>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private static int CountLoop(ReadOnlySpan<int> region, int item)
+    {
+        var result = 0;
+        foreach (int i in region)
+            if (i == item)
+                result++;
+        return result;
+    }
+
+    /// <summary>
+    /// Return item count in memory region (LINQ)
+    /// </summary>
+    /// <param name="region"></param>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private static int CountLinq(int[] region, int item) => region.Count(i => i == item);
+
+    /// <summary>
+    /// Return item count in memory region (Variable SIMD)
+    /// </summary>
+    /// <param name="region"></param>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private static int CountVector(ReadOnlySpan<int> region, int item)
+    {
+        var mask = new Vector<int>(item);
+        var vector = Vector<int>.Zero;
+        for (int i = 0, count = region.Length - Vector<int>.Count; i <= count; i += Vector<int>.Count)
+            vector -= Vector.Equals(new Vector<int>(region[i..]), mask);
+        var result = Vector.Dot(vector, Vector<int>.One);
+        for (var i = region.Length - (region.Length % Vector<int>.Count); i < region.Length; i++)
+            if (region[i] == item)
+                result++;
+        return result;
+    }
+
+    /// <summary>
+    /// Return item count in memory region (AVX2)
+    /// </summary>
+    /// <param name="region"></param>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private unsafe int CountAvx2(ReadOnlySpan<int> region, int item)
+    {
+        int* pItem = stackalloc int[1];
+        pItem[0] = item;
+        var mask = Avx2.BroadcastScalarToVector256(pItem);
+        var vector = Vector256<int>.Zero;
+        fixed (int* pRegion = region)
+            for (int i = 0, count = region.Length - Vector256<int>.Count; i <= count; i += Vector256<int>.Count)
+                vector = Avx2.Subtract(vector, Avx2.CompareEqual(Avx.LoadVector256(pRegion + i), mask));
+        var result = Vector256.Dot(vector, Vector256<int>.One);
+        for (var i = region.Length - (region.Length % Vector256<int>.Count); i < region.Length; i++)
+            if (region[i] == item)
+                result++;
+        return result;
+    }
+
+    /// <summary>
+    /// Return item count in memory region (AVX2)
+    /// </summary>
+    /// <param name="pRegion"></param>
+    /// <param name="itemCount"></param>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    [LibraryImport("ByteZoo.Blog.Asm.Library", EntryPoint = "CountAvx2_Interop", SetLastError = false)]
+    private static unsafe partial int CountAvx2Interop(int* pRegion, int itemCount, int item);
+
+    /// <summary>
+    /// Return item count in memory region (AVX-512)
+    /// </summary>
+    /// <param name="region"></param>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private unsafe int CountAvx512(ReadOnlySpan<int> region, int item)
+    {
+        int* pItem = stackalloc int[1];
+        pItem[0] = item;
+        var mask = Avx512F.BroadcastScalarToVector512(Avx2.BroadcastScalarToVector128(pItem));
+        var vector = Vector512<int>.Zero;
+        fixed (int* pRegion = region)
+            for (int i = 0, count = region.Length - Vector512<int>.Count; i <= count; i += Vector512<int>.Count)
+                vector = Avx512F.Subtract(vector, Avx512F.CompareEqual(Avx512F.LoadVector512(pRegion + i), mask));
+        var result = Vector512.Dot(vector, Vector512<int>.One);
+        for (var i = region.Length - (region.Length % Vector512<int>.Count); i < region.Length; i++)
+            if (region[i] == item)
+                result++;
+        return result;
+    }
+
+    /// <summary>
+    /// Return item count in memory region (AVX-512)
+    /// </summary>
+    /// <param name="pRegion"></param>
+    /// <param name="itemCount"></param>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    [LibraryImport("ByteZoo.Blog.Asm.Library", EntryPoint = "CountAvx512_Interop", SetLastError = false)]
+    private static unsafe partial int CountAvx512Interop(int* pRegion, int itemCount, int item);
+    #endregion
+
     #region Compare
     /// <summary>
     /// Compare functions
@@ -599,139 +732,6 @@ public partial class IntrinsicsController : Controller
     [LibraryImport("ByteZoo.Blog.Asm.Library", EntryPoint = "CompareAvx512_Interop", SetLastError = false)]
     [return: MarshalAs(UnmanagedType.U1)]
     private static unsafe partial bool CompareAvx512Interop(byte* pRegion1, byte* pRegion2, int itemCount);
-    #endregion
-
-    #region Count
-    /// <summary>
-    /// Count functions
-    /// </summary>
-    private unsafe void Count()
-    {
-        var region = MemoryService.GenerateRegionInt(REGION_SIZE);
-        var item = region[^1];
-        displayService.WriteInformation($"Count = {CountLoop(region, item):n0} (Loop)");
-        displayService.WriteInformation($"Count = {CountLinq(region, item):n0} (LINQ)");
-        displayService.WriteInformation($"Count = {CountVector(region, item):n0} (Vector)");
-        fixed (int* pRegion = region)
-        {
-            if (Avx2.IsSupported)
-            {
-                displayService.WriteInformation($"Count = {CountAvx2(region, item):n0} (AVX2)");
-                displayService.WriteInformation($"Count = {CountAvx2Interop(pRegion, region.Length, item):n0} (AVX2 Interop)");
-            }
-            if (Avx512F.IsSupported)
-            {
-                displayService.WriteInformation($"Count = {CountAvx512(region, item):n0} (AVX-512)");
-                displayService.WriteInformation($"Count = {CountAvx512Interop(pRegion, region.Length, item):n0} (AVX-512 Interop)");
-            }
-        }
-    }
-
-    /// <summary>
-    /// Return item count in memory region (loop)
-    /// </summary>
-    /// <param name="region"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    private static int CountLoop(ReadOnlySpan<int> region, int item)
-    {
-        var result = 0;
-        foreach (int i in region)
-            if (i == item)
-                result++;
-        return result;
-    }
-
-    /// <summary>
-    /// Return item count in memory region (LINQ)
-    /// </summary>
-    /// <param name="region"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    private static int CountLinq(int[] region, int item) => region.Count(i => i == item);
-
-    /// <summary>
-    /// Return item count in memory region (Variable SIMD)
-    /// </summary>
-    /// <param name="region"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    private static int CountVector(ReadOnlySpan<int> region, int item)
-    {
-        var mask = new Vector<int>(item);
-        var vector = Vector<int>.Zero;
-        for (int i = 0, count = region.Length - Vector<int>.Count; i <= count; i += Vector<int>.Count)
-            vector -= Vector.Equals(new Vector<int>(region[i..]), mask);
-        var result = Vector.Dot(vector, Vector<int>.One);
-        for (var i = region.Length - (region.Length % Vector<int>.Count); i < region.Length; i++)
-            if (region[i] == item)
-                result++;
-        return result;
-    }
-
-    /// <summary>
-    /// Return item count in memory region (AVX2)
-    /// </summary>
-    /// <param name="region"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    private unsafe int CountAvx2(ReadOnlySpan<int> region, int item)
-    {
-        int* pItem = stackalloc int[1];
-        pItem[0] = item;
-        var mask = Avx2.BroadcastScalarToVector256(pItem);
-        var vector = Vector256<int>.Zero;
-        fixed (int* pRegion = region)
-            for (int i = 0, count = region.Length - Vector256<int>.Count; i <= count; i += Vector256<int>.Count)
-                vector = Avx2.Subtract(vector, Avx2.CompareEqual(Avx.LoadVector256(pRegion + i), mask));
-        var result = Vector256.Dot(vector, Vector256<int>.One);
-        for (var i = region.Length - (region.Length % Vector256<int>.Count); i < region.Length; i++)
-            if (region[i] == item)
-                result++;
-        return result;
-    }
-
-    /// <summary>
-    /// Return item count in memory region (AVX2)
-    /// </summary>
-    /// <param name="pRegion"></param>
-    /// <param name="itemCount"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    [LibraryImport("ByteZoo.Blog.Asm.Library", EntryPoint = "CountAvx2_Interop", SetLastError = false)]
-    private static unsafe partial int CountAvx2Interop(int* pRegion, int itemCount, int item);
-
-    /// <summary>
-    /// Return item count in memory region (AVX-512)
-    /// </summary>
-    /// <param name="region"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    private unsafe int CountAvx512(ReadOnlySpan<int> region, int item)
-    {
-        int* pItem = stackalloc int[1];
-        pItem[0] = item;
-        var mask = Avx512F.BroadcastScalarToVector512(Avx2.BroadcastScalarToVector128(pItem));
-        var vector = Vector512<int>.Zero;
-        fixed (int* pRegion = region)
-            for (int i = 0, count = region.Length - Vector512<int>.Count; i <= count; i += Vector512<int>.Count)
-                vector = Avx512F.Subtract(vector, Avx512F.CompareEqual(Avx512F.LoadVector512(pRegion + i), mask));
-        var result = Vector512.Dot(vector, Vector512<int>.One);
-        for (var i = region.Length - (region.Length % Vector512<int>.Count); i < region.Length; i++)
-            if (region[i] == item)
-                result++;
-        return result;
-    }
-
-    /// <summary>
-    /// Return item count in memory region (AVX-512)
-    /// </summary>
-    /// <param name="pRegion"></param>
-    /// <param name="itemCount"></param>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    [LibraryImport("ByteZoo.Blog.Asm.Library", EntryPoint = "CountAvx512_Interop", SetLastError = false)]
-    private static unsafe partial int CountAvx512Interop(int* pRegion, int itemCount, int item);
     #endregion
 
     #endregion

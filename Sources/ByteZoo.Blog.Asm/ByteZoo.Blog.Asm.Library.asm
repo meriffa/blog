@@ -8,7 +8,7 @@
 
                         %include                "System.inc"
                         %include                "Macros.inc"
-                        %include                "AssemblyInterop.inc"
-                        %include                "Intrinsics.inc"
+                        %include                "./ByteZoo.Blog.Asm.Library/AssemblyInterop.asm"
+                        %include                "./ByteZoo.Blog.Asm.Library/Intrinsics.asm"
 
                         section                 .data
