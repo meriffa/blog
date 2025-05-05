@@ -1,3 +1,4 @@
+using ByteZoo.Blog.Profiler.Models;
 using ByteZoo.Blog.Profiler.Services;
 using Silhouette;
 using System.Runtime.CompilerServices;
@@ -14,12 +15,12 @@ internal partial class CorProfilerCallback : CorProfilerCallback11Base
     #region Constants
     private const string CONFIG_MONITOR_THREADS = "BYTEZOO_BLOG_PROFILER_MONITOR_THREADS";
     private const string CONFIG_MONITOR_MODULES = "BYTEZOO_BLOG_PROFILER_MONITOR_MODULES";
-    private const string CONFIG_MONITOR_MDTOKEN_ALLOCATED = "BYTEZOO_BLOG_PROFILER_MONITOR_MDTOKEN_ALLOCATED";
+    private const string CONFIG_MONITOR_ALLOCATED_TYPE_NAME = "CONFIG_MONITOR_ALLOCATED_TYPE_NAME";
     private const string CONFIG_ENABLE_STACK_SNAPSHOT = "BYTEZOO_BLOG_PROFILER_ENABLE_STACK_SNAPSHOT";
     #endregion
 
     #region Private Members
-    private int? mdTokenAllocated;
+    private string? allocatedTypeName;
     private bool stackWalkEnabled;
     #endregion
 
@@ -38,7 +39,7 @@ internal partial class CorProfilerCallback : CorProfilerCallback11Base
         }
         var result = ICorProfilerInfo11.SetEventMask(GetEventMask());
         if (result)
-            DisplayService.WriteInformation("Profiler initialized.");
+            DisplayService.WriteInformation($"Profiler initialized (API Version = {iCorProfilerInfoVersion}).");
         return result;
     }
     #endregion
@@ -97,7 +98,8 @@ internal partial class CorProfilerCallback : CorProfilerCallback11Base
     /// <returns></returns>
     protected override HResult ModuleLoadFinished(ModuleId moduleId, HResult hrStatus)
     {
-        DisplayService.WriteInformation($"Module load finished (Module ID = {moduleId.Value:X8}, Status = {hrStatus}).");
+        var moduleInfo = ICorProfilerInfo.GetModuleInfo(moduleId).ThrowIfFailed();
+        DisplayService.WriteInformation($"Module load finished (Module ID = {moduleId.Value:X8}, Name = {moduleInfo.ModuleName}, Status = {hrStatus}, Base = {FormatAddress(moduleInfo.BaseLoadAddress)}).");
         return HResult.S_OK;
     }
 
@@ -109,10 +111,11 @@ internal partial class CorProfilerCallback : CorProfilerCallback11Base
     /// <returns></returns>
     protected override HResult ObjectAllocated(ObjectId objectId, ClassId classId)
     {
-        var mdToken = GetMetaDataToken(classId);
-        if (mdToken == mdTokenAllocated)
+        var typeName = GetTypeName(classId);
+        if (typeName.Equals(allocatedTypeName, StringComparison.OrdinalIgnoreCase))
         {
-            DisplayService.WriteInformation($"Object allocated (Class ID = {classId}, mdToken = {mdToken:X8}, Object ID = {objectId.Value:X8}).");
+            var mdToken = GetMetaDataToken(classId);
+            DisplayService.WriteInformation($"Object allocated (Type = {typeName}, MethodTable = {FormatMethodTable(classId.Value)}, mdToken = {FormatMdToken(mdToken)}, Address = {FormatAddress(objectId.Value)}).");
             if (stackWalkEnabled)
                 PerformStackWalk();
         }
@@ -132,7 +135,7 @@ internal partial class CorProfilerCallback : CorProfilerCallback11Base
             result |= COR_PRF_MONITOR.COR_PRF_MONITOR_THREADS;
         if (IsSwitchEnabled(CONFIG_MONITOR_MODULES))
             result |= COR_PRF_MONITOR.COR_PRF_MONITOR_MODULE_LOADS;
-        if ((mdTokenAllocated = GetSwitchValue(CONFIG_MONITOR_MDTOKEN_ALLOCATED)) != null)
+        if ((allocatedTypeName = GetSwitchValue(CONFIG_MONITOR_ALLOCATED_TYPE_NAME)) != null)
             result |= COR_PRF_MONITOR.COR_PRF_MONITOR_OBJECT_ALLOCATED | COR_PRF_MONITOR.COR_PRF_ENABLE_OBJECT_ALLOCATED;
         if (stackWalkEnabled = IsSwitchEnabled(CONFIG_ENABLE_STACK_SNAPSHOT))
             result |= COR_PRF_MONITOR.COR_PRF_ENABLE_STACK_SNAPSHOT;
@@ -151,25 +154,35 @@ internal partial class CorProfilerCallback : CorProfilerCallback11Base
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
-    private static int? GetSwitchValue(string name)
-    {
-        try
-        {
-            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(name)))
-                return Convert.ToInt32(Environment.GetEnvironmentVariable(name), 16);
-            return null;
-        }
-        catch
-        {
-            return null;
-        }
-    }
+    private static string? GetSwitchValue(string name) => Environment.GetEnvironmentVariable(name);
 
     /// <summary>
-    /// Return current thread OSID
+    /// Format MethodTable
     /// </summary>
+    /// <param name="value"></param>
     /// <returns></returns>
-    private nuint GetCurrentThreadId() => ICorProfilerInfo.GetThreadInfo(ICorProfilerInfo.GetCurrentThreadId().ThrowIfFailed()).ThrowIfFailed();
+    private static string FormatMethodTable(nint value) => $"{value:X16}";
+
+    /// <summary>
+    /// Format mdToken
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    private static string FormatMdToken(int? value) => value != null ? $"{value:X8}" : "N/A";
+
+    /// <summary>
+    /// Format address
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    private static string FormatAddress(nint value) => $"0x{value:X16}";
+
+    /// <summary>
+    /// Format thread id
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    private static string FormatThreadId(nuint value) => $"0x{value:X4}";
 
     /// <summary>
     /// Return mdToken
@@ -209,28 +222,6 @@ internal partial class CorProfilerCallback : CorProfilerCallback11Base
     }
 
     /// <summary>
-    /// Return method name
-    /// </summary>
-    /// <param name="ip"></param>
-    /// <returns></returns>
-    private string GetMethodName(nint ip)
-    {
-        try
-        {
-            var functionId = ICorProfilerInfo.GetFunctionFromIP(ip).ThrowIfFailed();
-            var functionInfo = ICorProfilerInfo.GetFunctionInfo(functionId).ThrowIfFailed();
-            using var metaDataImport = ICorProfilerInfo.GetModuleMetaData(functionInfo.ModuleId, CorOpenFlags.ofRead, KnownGuids.IMetaDataImport).ThrowIfFailed().Wrap();
-            var methodProperties = metaDataImport.Value.GetMethodProps(new MdMethodDef(functionInfo.Token)).ThrowIfFailed();
-            var typeDefProps = metaDataImport.Value.GetTypeDefProps(methodProperties.Class).ThrowIfFailed();
-            return $"{typeDefProps.TypeName}.{methodProperties.Name}";
-        }
-        catch
-        {
-            return "[N/A]";
-        }
-    }
-
-    /// <summary>
     /// Perform stack walk
     /// </summary>
     private unsafe void PerformStackWalk()
@@ -240,9 +231,9 @@ internal partial class CorProfilerCallback : CorProfilerCallback11Base
         ThreadId threadId = default;
         if (ICorProfilerInfo2.DoStackSnapshot(threadId, &PerformStackWalkCallback, COR_PRF_SNAPSHOT_INFO.COR_PRF_SNAPSHOT_DEFAULT, &context, null, 0))
         {
-            DisplayService.WriteInformation($"Thread Stack Frames (Thread ID = {GetCurrentThreadId():X4}):");
+            DisplayService.WriteInformation($"Thread Stack Frames (Current Thread ID = {FormatThreadId(GetCurrentThreadId())}):");
             for (int i = 0; i < context.Count; i++)
-                DisplayService.WriteInformation($"- Thread Stack Frame[{i}]: IP = {context.Frames[i]:X8}");
+                DisplayService.WriteInformation($"- Thread Stack Frame[{i}] (Method = {GetMethodName(context.Frames[i])}, IP = {FormatMethodTable(context.Frames[i])}).");
         }
         else
             DisplayService.WriteError($"Stack walk failed.");
@@ -266,6 +257,34 @@ internal partial class CorProfilerCallback : CorProfilerCallback11Base
             return HResult.E_ABORT;
         stackWalkContext.Frames[stackWalkContext.Count++] = ip;
         return HResult.S_OK;
+    }
+
+    /// <summary>
+    /// Return current thread OSID
+    /// </summary>
+    /// <returns></returns>
+    private nuint GetCurrentThreadId() => ICorProfilerInfo.GetThreadInfo(ICorProfilerInfo.GetCurrentThreadId().ThrowIfFailed()).ThrowIfFailed();
+
+    /// <summary>
+    /// Return method name
+    /// </summary>
+    /// <param name="ip"></param>
+    /// <returns></returns>
+    private string GetMethodName(nint ip)
+    {
+        try
+        {
+            var functionId = ICorProfilerInfo.GetFunctionFromIP(ip).ThrowIfFailed();
+            var functionInfo = ICorProfilerInfo.GetFunctionInfo(functionId).ThrowIfFailed();
+            using var metaDataImport = ICorProfilerInfo.GetModuleMetaData(functionInfo.ModuleId, CorOpenFlags.ofRead, KnownGuids.IMetaDataImport).ThrowIfFailed().Wrap();
+            var methodProperties = metaDataImport.Value.GetMethodProps(new MdMethodDef(functionInfo.Token)).ThrowIfFailed();
+            var typeDefProps = metaDataImport.Value.GetTypeDefProps(methodProperties.Class).ThrowIfFailed();
+            return $"{typeDefProps.TypeName}.{methodProperties.Name}";
+        }
+        catch
+        {
+            return "[N/A]";
+        }
     }
     #endregion
 

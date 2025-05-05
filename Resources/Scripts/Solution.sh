@@ -30,7 +30,7 @@ dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Micr
 dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Microsoft.Extensions.Hosting
 dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Npgsql.EntityFrameworkCore.PostgreSQL
 dotnet add ./Sources/ByteZoo.Blog.Common/ByteZoo.Blog.Common.csproj package Pomelo.EntityFrameworkCore.MySql --prerelease
-dotnet add ./Sources/ByteZoo.Blog.Profiler/ByteZoo.Blog.Profiler.csproj package Silhouette
+dotnet add ./Sources/ByteZoo.Blog.Profiler/ByteZoo.Blog.Profiler.csproj package NativeObjects
 dotnet add ./Sources/ByteZoo.Blog.Web/ByteZoo.Blog.Web.csproj package Swashbuckle.AspNetCore
 
 # Add project references

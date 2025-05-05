@@ -40,6 +40,7 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [Method Dispatch](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(Method%20Dispatch).md)
   * [Assembly Interop](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(Assembly%20Interop).md)
   * [SIMD, AVX, Intrinsics](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(SIMD,%20AVX,%20Intrinsics).md)
+  * [Profiling (TBD)](/Resources/Articles/Concepts/.NET%20Core%20Concepts%20(Profiling).md)
 
 * .NET Core Troubleshooting
 
