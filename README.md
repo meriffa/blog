@@ -13,6 +13,7 @@ This repository contains the source code and scripts for the [.NET Blog](https:/
   * [Build The .NET Runtime From Source](/Resources/Articles/Prerequisites/Build%20The%20.NET%20Runtime%20From%20Source.md)
   * [SOS Extension Commands (TBD)](/Resources/Articles/Prerequisites/SOS%20Extension%20Commands.md)
   * [Transfer .NET Core Dumps On Linux](/Resources/Articles/Prerequisites/Transfer%20.NET%20Core%20Dumps%20On%20Linux.md)
+  * [Create .NET Core Dumps On Linux (Docker, Native AOT)](/Resources/Articles/Prerequisites/Create%20.NET%20Core%20Dumps%20On%20Linux%20(Docker,%20Native%20AOT).md)
 
 * .NET Core Concepts
 

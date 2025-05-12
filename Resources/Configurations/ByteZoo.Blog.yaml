@@ -1,0 +1,26 @@
+name: ByteZoo.Blog
+
+services:
+
+  bytezoo.blog.app:
+    build:
+      context: .
+      dockerfile: ./ByteZoo.Blog.App.Dockerfile
+    environment:
+      - DOTNET_EnableDiagnostics=1
+      - DOTNET_DiagnosticPorts=/tmp/ByteZoo.Blog.App.socket,nosuspend
+    volumes:
+      - ~/ByteZoo.Blog.App.tmp:/tmp
+
+  bytezoo.blog.web:
+    build:
+      context: .
+      dockerfile: ./ByteZoo.Blog.Web.Dockerfile
+    environment:
+      - DOTNET_EnableDiagnostics=1
+      - DOTNET_DiagnosticPorts=/tmp/ByteZoo.Blog.Web.socket,nosuspend
+    ports:
+      - "12080:12080"
+      - "12443:12443"
+    volumes:
+      - ~/ByteZoo.Blog.Web.tmp:/tmp

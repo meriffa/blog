@@ -4,6 +4,7 @@ using ByteZoo.Blog.Common.Services;
 using CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace ByteZoo.Blog.App;
@@ -20,6 +21,7 @@ class Program
     /// </summary>
     /// <param name="args"></param>
     /// <returns></returns>
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Controllers.Concepts.StringController))]
     static int Main(string[] args)
     {
         var host = CreateApplicationHost(args);
