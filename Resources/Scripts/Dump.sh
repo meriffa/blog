@@ -20,6 +20,12 @@ GetTargetProcessId() {
   echo $(ps -ef | grep "dotnet" | grep "$1" | awk '{print $2}')
 }
 
+# Return createdump path
+GetCreateDumpPath() {
+  CREATE_DUMP_PATH=$(dotnet --list-runtimes | grep "^Microsoft.NETCore.App " | sort | tail -1 | sed -E "s/^Microsoft\.NETCore\.App\s([0-9\.]+)\s\[(.*)+\]/\2\/\1\/createdump/")
+  [ ! -f $CREATE_DUMP_PATH ] && DisplayErrorAndStop "Create dump tool 'createdump' not found."
+}
+
 # Trigger GC collect (Compacting Gen2)
 TriggerGCCollect() {
   dotnet-trace collect -p $1 --providers Microsoft-Windows-DotNETRuntime:0x800000:4 --duration 00:00:01 --output /tmp/dotnet.nettrace &> /dev/null
@@ -31,9 +37,10 @@ TriggerGCCollect() {
 
 # Capture .NET Core dump
 CaptureDotNetCoreDump() {
-  local RESULT=$(createdump -f $2 --full $1)
+  GetCreateDumpPath
+  local RESULT=$($CREATE_DUMP_PATH -f $2 --full $1)
   echo "$RESULT" | grep "^\[createdump\] Dump successfully written in " &> /dev/null
-  echo $(echo "$RESULT" | grep -Po "^\[createdump\] Writing full dump to file \K.*$")
+  OUTPUT_FILE=$(echo "$RESULT" | grep -Po "^\[createdump\] Writing full dump to file \K.*$")
 }
 
 # Download symbols
@@ -117,7 +124,7 @@ WaitForCpuUtilizationThreshold() {
 }
 
 # Create core dump
-CreateDump() {
+CreateCoreDump() {
   [ -z $FLAG_TARGET_NAME ] && DisplayErrorAndStop "Target process name (-n|--name) not specified."
   TARGET_PID=$(GetTargetProcessId $FLAG_TARGET_NAME)
   [ -z $TARGET_PID ] && DisplayErrorAndStop "Target .NET Core process name '$FLAG_TARGET_NAME' not found."
@@ -131,7 +138,7 @@ CreateDump() {
     [ $? != 0 ] && DisplayErrorAndStop "Process terminated (PID = $TARGET_PID)."
   fi
   [ ! -z $FLAG_TRIGGER_GC ] && TriggerGCCollect $TARGET_PID
-  OUTPUT_FILE=$(CaptureDotNetCoreDump $TARGET_PID $FLAG_OUTPUT_FILE)
+  CaptureDotNetCoreDump $TARGET_PID $FLAG_OUTPUT_FILE
   [ -z $OUTPUT_FILE ] && DisplayErrorAndStop "Capture .NET Core dump operation failed."
   echo ".NET Core dump created (PID = $TARGET_PID, File = '$OUTPUT_FILE')."
   [ ! -z $FLAG_SYMBOLS_DOWNLOAD ] && DownloadSymbols $OUTPUT_FILE $FLAG_SYMBOLS_FOLDER
@@ -196,7 +203,7 @@ done
 # Execute operation
 case $OPERATION in
   create)
-    CreateDump ;;
+    CreateCoreDump ;;
   setupcoredump)
     SetupCoreDump ;;
   displaymethod)

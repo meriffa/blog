@@ -1,4 +1,5 @@
 using ByteZoo.Blog.Common.MemoryMap.Records;
+using Microsoft.Diagnostics.Runtime;
 using System.Text.RegularExpressions;
 
 namespace ByteZoo.Blog.Common.MemoryMap.Services;
@@ -39,8 +40,16 @@ public partial class ProcessService(int processId) : MemoryMapService
         var index = 0;
         while (index < lines.Length)
             regions.Add(GetMemoryRegion(lines, ref index));
-        return regions;
+        return UpdateClrMemoryRegions(ConsolidateMemoryRegions(regions));
     }
+    #endregion
+
+    #region Protected Methods
+    /// <summary>
+    /// Return target instance
+    /// </summary>
+    /// <returns></returns>
+    protected override DataTarget GetDataTarget() => DataTarget.AttachToProcess(processId, false);
     #endregion
 
     #region Private Methods
@@ -55,31 +64,23 @@ public partial class ProcessService(int processId) : MemoryMapService
         var match = MapsHeaderLine().Match(lines[index]);
         if (!match.Success)
             throw new($"Invalid /proc/pid/maps entry ('{lines[index]}').");
-        var start = Convert.ToInt64(match.Groups["Start"].Value, 16);
-        var end = Convert.ToInt64(match.Groups["End"].Value, 16);
+        var start = Convert.ToUInt64(match.Groups["Start"].Value, 16);
+        var end = Convert.ToUInt64(match.Groups["End"].Value, 16) - 1UL;
         var permissions = GetMemoryRegionPermissions(match.Groups["Perms"].Value);
-        var size = 0L;
-        var rss = 0L;
-        var pss = 0L;
-        var privateClean = 0L;
-        var privateDirty = 0L;
-        var privateHugeTlb = 0L;
+        var size = 0UL;
         while (!lines[index++].StartsWith("VmFlags: ") && index < lines.Length)
             if (lines[index].StartsWith("Size: "))
                 size = GetMemoryRegionValue(lines[index]);
-            else if (lines[index].StartsWith("Rss: "))
-                rss = GetMemoryRegionValue(lines[index]);
-            else if (lines[index].StartsWith("Pss: "))
-                pss = GetMemoryRegionValue(lines[index]);
-            else if (lines[index].StartsWith("Private_Clean: "))
-                privateClean = GetMemoryRegionValue(lines[index]);
-            else if (lines[index].StartsWith("Private_Dirty: "))
-                privateDirty = GetMemoryRegionValue(lines[index]);
-            else if (lines[index].StartsWith("Private_Hugetlb: "))
-                privateHugeTlb = GetMemoryRegionValue(lines[index]);
-        if (size != end - start)
+        if (size == 0L)
+            throw new($"Entry /proc/pid/maps invalid size (Start = {start:X16}, End = {end:X16}, Size = {size:X16}).");
+        if (end - start + 1UL != size)
             throw new($"Entry /proc/pid/maps size mismatch (Start = {start:X16}, End = {end:X16}, Size = {size:X16}).");
-        return new MemoryRegion(Path: !string.IsNullOrEmpty(match.Groups["Path"].Value) ? match.Groups["Path"].Value : Anonymous, Vss: size, Rss: rss, Pss: pss, Uss: privateClean + privateDirty + privateHugeTlb, Start: start, End: end, Permissions: permissions);
+        if (start >= end)
+            throw new($"Entry /proc/pid/maps invalid region range (Start = {start:X16}, End = {end:X16}, Size = {size:X16}).");
+        return new MemoryRegion(Start: start, End: end, Permissions: permissions)
+        {
+            Path = !string.IsNullOrEmpty(match.Groups["Path"].Value) ? match.Groups["Path"].Value : Anonymous
+        };
     }
 
     /// <summary>
@@ -87,7 +88,7 @@ public partial class ProcessService(int processId) : MemoryMapService
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    private static long GetMemoryRegionValue(string value) => Convert.ToInt64(MapsValueLine().Match(value).Groups["Value"].Value) * 1024L;
+    private static ulong GetMemoryRegionValue(string value) => Convert.ToUInt64(MapsValueLine().Match(value).Groups["Value"].Value) * 1024L;
     #endregion
 
 }

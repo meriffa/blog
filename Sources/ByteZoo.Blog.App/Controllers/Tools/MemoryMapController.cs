@@ -1,4 +1,6 @@
+using ByteZoo.Blog.Common.MemoryMap.Records;
 using ByteZoo.Blog.Common.MemoryMap.Services;
+using ByteZoo.Blog.Common.Services;
 using CommandLine;
 
 namespace ByteZoo.Blog.App.Controllers.Tools;
@@ -42,10 +44,28 @@ public partial class MemoryMapController : Controller
     public string? Address { get; set; }
 
     /// <summary>
+    /// Filter regions by start address
+    /// </summary>
+    [Option("startAddress", HelpText = "Filter regions by start address.")]
+    public string? StartAddress { get; set; }
+
+    /// <summary>
+    /// Filter regions by end address
+    /// </summary>
+    [Option("endAddress", HelpText = "Filter regions by end address.")]
+    public string? EndAddress { get; set; }
+
+    /// <summary>
+    /// Group regions by path
+    /// </summary>
+    [Option('g', "group", HelpText = "Group regions by path.")]
+    public bool GroupByPath { get; set; }
+
+    /// <summary>
     /// Display regions
     /// </summary>
-    [Option('r', "displayRegions", HelpText = "Display regions.")]
-    public bool DisplayRegions { get; set; }
+    [Option('r', "regions", HelpText = "Display path regions.")]
+    public bool IncludeRegions { get; set; }
     #endregion
 
     #region Protected Methods
@@ -54,29 +74,59 @@ public partial class MemoryMapController : Controller
     /// </summary>
     protected override void Execute()
     {
-        MemoryMapService service = string.IsNullOrEmpty(DumpFile) ? new ProcessService(ProcessId) : new DumpService(DumpFile);
-        var regions = service.GetMemoryRegions();
-        if (!string.IsNullOrEmpty(Address))
-            regions = MemoryMapService.FilterMemoryRegions(regions, Convert.ToInt64(Address, 16));
-        var groups = MemoryMapService.GetMemoryRegionGroups(regions);
+        var regions = string.IsNullOrEmpty(DumpFile) ? new ProcessService(ProcessId).GetMemoryRegions() : new DumpService(DumpFile).GetMemoryRegions();
         if (!string.IsNullOrEmpty(PathIncludeExpression))
-            groups = MemoryMapService.FilterMemoryRegionGroups(groups, PathIncludeExpression, true);
+            regions = MemoryMapService.FilterMemoryRegionsByPath(regions, PathIncludeExpression, true);
         if (!string.IsNullOrEmpty(PathExcludeExpression))
-            groups = MemoryMapService.FilterMemoryRegionGroups(groups, PathExcludeExpression, false);
+            regions = MemoryMapService.FilterMemoryRegionsByPath(regions, PathExcludeExpression, false);
+        if (!string.IsNullOrEmpty(Address))
+            regions = MemoryMapService.FilterMemoryRegionsByAddress(regions, Convert.ToUInt64(Address, 16));
+        if (!string.IsNullOrEmpty(StartAddress))
+            regions = MemoryMapService.FilterMemoryRegionsByStartAddress(regions, Convert.ToUInt64(StartAddress, 16));
+        if (!string.IsNullOrEmpty(EndAddress))
+            regions = MemoryMapService.FilterMemoryRegionsByEndAddress(regions, Convert.ToUInt64(EndAddress, 16));
+        if (GroupByPath)
+            DisplayRegions(MemoryMapService.GetMemoryRegionGroups(regions), regions, IncludeRegions);
+        else
+            DisplayRegions(regions);
+    }
+    #endregion
+
+    #region Private Members
+    /// <summary>
+    /// Display group regions
+    /// </summary>
+    /// <param name="groups"></param>
+    /// <param name="regions"></param>
+    /// <param name="includeRegions"></param>
+    private static void DisplayRegions(List<MemoryRegionGroup> groups, List<MemoryRegion> regions, bool includeRegions)
+    {
         foreach (var group in groups.OrderBy(i => i.Order))
         {
-            displayService.WriteInformation($"- Path: File = '{group.Path}', VSS = {MemoryMapService.FormatSize(group.Vss)}, RSS = {MemoryMapService.FormatSize(group.Rss)}, PSS = {MemoryMapService.FormatSize(group.Pss)}, USS = {MemoryMapService.FormatSize(group.Uss)}");
-            if (DisplayRegions)
+            DisplayService.WriteText($"- Path: File = '{group.Path}', Size = {MemoryMapService.FormatSize(group.Size)}");
+            if (includeRegions)
             {
                 var groupRegions = regions.Where(i => i.Path == group.Path).OrderBy(i => i.Start);
                 foreach (var region in groupRegions)
-                    displayService.WriteInformation($"  - Region: {MemoryMapService.FormatAddress(region.Start)}-{MemoryMapService.FormatAddress(region.End)}, VSS = {MemoryMapService.FormatSize(region.Vss)}, RSS = {MemoryMapService.FormatSize(region.Rss)}, PSS = {MemoryMapService.FormatSize(region.Pss)}, USS = {MemoryMapService.FormatSize(region.Uss)}, Permissions = {MemoryMapService.FormatPermissions(region.Permissions)}");
-                var regionTotal = MemoryMapService.GetMemoryRegionsTotal(groupRegions);
-                displayService.WriteInformation($"  - Region Total: Count = {regionTotal.Count}, VSS = {MemoryMapService.FormatSize(regionTotal.Vss)}, RSS = {MemoryMapService.FormatSize(regionTotal.Rss)}, PSS = {MemoryMapService.FormatSize(regionTotal.Pss)}, USS = {MemoryMapService.FormatSize(regionTotal.Uss)}");
+                    DisplayService.WriteText($"  - Region: {MemoryMapService.FormatAddress(region.Start)}-{MemoryMapService.FormatAddress(region.End)}, Size = {MemoryMapService.FormatSize(region.Size)}, Permissions = {MemoryMapService.FormatPermissions(region.Permissions)}");
+                var groupTotal = MemoryMapService.GetMemoryRegionsTotal(groupRegions);
+                DisplayService.WriteText($"  - Region Total: Count = {groupTotal.Count}, Size = {MemoryMapService.FormatSize(groupTotal.Size)}");
             }
         }
         var pathTotal = MemoryMapService.GetMemoryRegionGroupsTotal(groups);
-        displayService.WriteInformation($"- Path Total: Count = {pathTotal.Count}, VSS = {MemoryMapService.FormatSize(pathTotal.Vss)}, RSS = {MemoryMapService.FormatSize(pathTotal.Rss)}, PSS = {MemoryMapService.FormatSize(pathTotal.Pss)}, USS = {MemoryMapService.FormatSize(pathTotal.Uss)}");
+        DisplayService.WriteText($"- Path Total: Count = {pathTotal.Count}, Size = {MemoryMapService.FormatSize(pathTotal.Size)}");
+    }
+
+    /// <summary>
+    /// Display regions
+    /// </summary>
+    /// <param name="regions"></param>
+    private static void DisplayRegions(List<MemoryRegion> regions)
+    {
+        foreach (var region in regions.OrderBy(i => i.Start))
+            DisplayService.WriteText($"- Region: {MemoryMapService.FormatAddress(region.Start)}-{MemoryMapService.FormatAddress(region.End)}, Size = {MemoryMapService.FormatSize(region.Size)}, Permissions = {MemoryMapService.FormatPermissions(region.Permissions)}, File = '{region.Path}'");
+        var total = MemoryMapService.GetMemoryRegionsTotal(regions);
+        DisplayService.WriteText($"- Total: Count = {total.Count}, Size = {MemoryMapService.FormatSize(total.Size)}");
     }
     #endregion
 

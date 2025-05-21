@@ -1,5 +1,6 @@
 using ByteZoo.Blog.Common.MemoryMap.Enums;
 using ByteZoo.Blog.Common.MemoryMap.Records;
+using Microsoft.Diagnostics.Runtime;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -74,21 +75,37 @@ public partial class DumpService(string dumpFile) : MemoryMapService
                 throw new($"Invalid core dump '{dumpFile}' segment line #1 ('{lines[2 * i + 6]}').");
             if (Enum.Parse<CoreDumpSegmentType>(matchSegmentsLine1.Groups["Type"].Value, true) != CoreDumpSegmentType.Note)
             {
-                var start = Convert.ToInt64(matchSegmentsLine1.Groups["VirtAddr"].Value, 16);
-                if (Convert.ToInt64(matchSegmentsLine1.Groups["PhysAddr"].Value, 16) != 0L)
+                var start = Convert.ToUInt64(matchSegmentsLine1.Groups["VirtAddr"].Value, 16);
+                if (Convert.ToUInt64(matchSegmentsLine1.Groups["PhysAddr"].Value, 16) != 0L)
                     throw new($"Invalid core dump '{dumpFile}' segment physical address ('{lines[2 * i + 6]}').");
                 var matchSegmentsLine2 = SegmentsLine2().Match(lines[2 * i + 7]);
                 if (!matchSegmentsLine2.Success)
                     throw new($"Invalid core dump '{dumpFile}' segment line #2 ('{lines[2 * i + 7]}').");
-                var size = Convert.ToInt64(matchSegmentsLine2.Groups["MemSiz"].Value, 16);
-                if (size != Convert.ToInt64(matchSegmentsLine2.Groups["FileSiz"].Value, 16))
+                var size = Convert.ToUInt64(matchSegmentsLine2.Groups["MemSiz"].Value, 16);
+                if (size != Convert.ToUInt64(matchSegmentsLine2.Groups["FileSiz"].Value, 16))
                     throw new($"Invalid core dump '{dumpFile}' memory size ('{lines[2 * i + 7]}').");
                 var permissions = GetMemoryRegionPermissions(matchSegmentsLine2.Groups["Flags"].Value.Replace(" ", "").ToLower().Trim());
-                regions.Add(new(Path: Anonymous, Vss: size, Rss: size, Pss: size, Uss: size, Start: start, End: start + size, Permissions: permissions));
+                var end = start + size - 1UL;
+                if (size == 0L)
+                    throw new($"Invalid core dump '{dumpFile}' size (Start = {start:X16}, End = {end:X16}, Size = {size:X16}).");
+                if (start >= end)
+                    throw new($"Invalid core dump '{dumpFile}' segment range (Start = {start:X16}, End = {end:X16}, Size = {size:X16}).");
+                regions.Add(new(Start: start, End: end, Permissions: permissions)
+                {
+                    Path = Anonymous
+                });
             }
         }
-        return UpdateDumpMemoryRegions(regions, GetMemoryRegionMappings());
+        return UpdateClrMemoryRegions(ConsolidateMemoryRegions(UpdateMemoryRegions(regions, GetMemoryRegionMappings())));
     }
+    #endregion
+
+    #region Protected Methods
+    /// <summary>
+    /// Return target instance
+    /// </summary>
+    /// <returns></returns>
+    protected override DataTarget GetDataTarget() => DataTarget.LoadDump(dumpFile);
     #endregion
 
     #region Private Methods
@@ -126,37 +143,17 @@ public partial class DumpService(string dumpFile) : MemoryMapService
                 Match match;
                 while ((match = NotesLine().Match(lines[index])).Success)
                 {
-                    var start = Convert.ToInt64(match.Groups["Start"].Value, 16);
-                    var end = Convert.ToInt64(match.Groups["End"].Value, 16);
+                    var start = Convert.ToUInt64(match.Groups["Start"].Value, 16);
+                    var end = Convert.ToUInt64(match.Groups["End"].Value, 16) - 1UL;
                     var path = lines[index + 1].Trim();
+                    if (start > end)
+                        throw new($"Invalid core dump '{dumpFile}' mapping range (Start = {start:X16}, End = {end:X16}).");
                     mappings.Add(new(Path: path, Start: start, End: end));
                     index += 2;
                 }
                 index--;
             }
         return mappings;
-    }
-
-    /// <summary>
-    /// Update core dump memory regions
-    /// </summary>
-    /// <param name="regions"></param>
-    /// <param name="mappings"></param>
-    /// <returns></returns>
-    private static List<MemoryRegion> UpdateDumpMemoryRegions(List<MemoryRegion> regions, List<MemoryRegionMapping> mappings)
-    {
-        for (int i = 0; i < regions.Count; i++)
-        {
-            var region = regions[i];
-            var regionMappings = mappings.Where(i => i.Start <= region.Start && region.End <= i.End);
-            if (regionMappings.Count() > 0)
-            {
-                if (regionMappings.Count() > 1)
-                    throw new($"Multiple region mappings found (Start = {FormatAddress(region.Start)}, End = {FormatAddress(region.End)}).");
-                regions[i] = region with { Path = regionMappings.First().Path };
-            }
-        }
-        return regions;
     }
     #endregion
 

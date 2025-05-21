@@ -30,6 +30,12 @@ public class DisplayService(ILogger<DisplayService> logger)
     }
 
     /// <summary>
+    /// Display text
+    /// </summary>
+    /// <param name="text"></param>
+    public static void WriteText(string text) => Console.WriteLine(text);
+
+    /// <summary>
     /// Display information
     /// </summary>
     /// <param name="text"></param>

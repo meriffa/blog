@@ -6,4 +6,4 @@ namespace ByteZoo.Blog.Common.MemoryMap.Records;
 /// <param name="Path"></param>
 /// <param name="Start"></param>
 /// <param name="End"></param>
-public readonly record struct MemoryRegionMapping(string Path, long Start, long End);
+public readonly record struct MemoryRegionMapping(string Path, ulong Start, ulong End);

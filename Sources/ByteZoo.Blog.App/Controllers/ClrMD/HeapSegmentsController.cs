@@ -41,7 +41,7 @@ public class HeapSegmentsController : DumpController
         displayService.WriteInformation($"GC Heap: Index = {heap.Index}, Segments = {heap.Segments.Length}");
         foreach (var segment in heap.Segments.OrderBy(i => i.Address))
             if (SegmentKind == null || segment.Kind == SegmentKind)
-                // [Committed...[Allocated]...][Reserved]
+                // [Committed...[Allocated (Used / Filled)]...][Reserved]
                 displayService.WriteInformation($"Segment: Type = {GetSegmentType(segment)}, Address = {GetAddress(segment.Address)}, Committed = {GetAddress(segment.CommittedMemory.Start)}-{GetAddress(segment.CommittedMemory.End)} ({GetAddress(segment.CommittedMemory.Length)}), Allocated = {GetAddress(segment.Start)}-{GetAddress(segment.End)} ({GetAddress(segment.Length)}), Reserved = {GetAddress(segment.ReservedMemory.Start)}-{GetAddress(segment.ReservedMemory.End)} ({GetAddress(segment.ReservedMemory.Length)})");
     }
 
