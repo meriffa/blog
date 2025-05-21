@@ -3,7 +3,6 @@
     "editor.formatOnType": true,
     "html.format.wrapLineLength": 300,
     "editor.minimap.enabled": false,
-    "typescript.surveys.enabled": false,
     "editor.cursorBlinking": "solid",
     "files.associations": {
         "chrono": "c",

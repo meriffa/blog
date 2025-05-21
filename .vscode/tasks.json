@@ -118,27 +118,6 @@
             }
         },
         {
-            "label": "ByteZoo.Blog.Profiler Publish",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "publish",
-                "./Sources/ByteZoo.Blog.Profiler/ByteZoo.Blog.Profiler.csproj",
-                "--output",
-                "./Sources/ByteZoo.Blog.Profiler/bin/Publish",
-                "--configuration",
-                "Release",
-                "--use-current-runtime",
-                "/property:NativeLib=Shared"
-            ],
-            "group": "build",
-            "presentation": {
-                "reveal": "silent",
-                "clear": true
-            },
-            "problemMatcher": "$msCompile"
-        },
-        {
             "label": "ByteZoo.Blog.App Deploy",
             "command": "./Resources/Scripts/Deploy.sh",
             "type": "process",
