@@ -132,6 +132,27 @@
             "dependsOn": [
                 "ByteZoo.Blog Build"
             ]
+        },
+        {
+            "label": "ByteZoo.Blog.App Publish (AOT)",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "./Sources/ByteZoo.Blog.App/ByteZoo.Blog.App.csproj",
+                "--output",
+                "./Sources/ByteZoo.Blog.App/bin/Publish",
+                "--configuration",
+                "Release",
+                "--use-current-runtime",
+                "/property:PublishAot=true",
+                "/property:InvariantGlobalization=true"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
         }
     ]
 }
