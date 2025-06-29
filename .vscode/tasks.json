@@ -146,7 +146,8 @@
                 "Release",
                 "--use-current-runtime",
                 "/property:PublishAot=true",
-                "/property:InvariantGlobalization=true"
+                "/property:InvariantGlobalization=true",
+                "/property:EventSourceSupport=true"
             ],
             "group": "build",
             "presentation": {
